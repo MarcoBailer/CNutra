@@ -30,4 +30,4 @@ Estou trabalhando arduamente para adicionar mais recursos, incluindo:
 
 ## Agradecimentos 🙌
 
-Obrigado por contribuir para tornar o Nutrição App um recurso valioso para cuidar da saúde e bem-estar! Seja parte dessa jornada nutritiva conosco! 🌱
+Obrigado por contribuir para tornar o Nutrição App um recurso valioso para cuidar da saúde e bem-estar! Seja parte dessa jornada nutritiva comigo! 🌱
