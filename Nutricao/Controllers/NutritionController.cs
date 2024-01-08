@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Nutricao.Core.Interfaces;
 using Nutricao.Core.Service.Api;
 
 namespace Nutricao.Controllers
@@ -7,49 +8,28 @@ namespace Nutricao.Controllers
     [Route("api/[controller]")]
     public class NutritionController : Controller
     {
-        private readonly FoodDataCentralApiService _apiService;
 
-        public NutritionController(FoodDataCentralApiService apiService)
+        private readonly IFoodInfomation _foodInformation;
+
+        public NutritionController(IFoodInfomation foodInformation)
         {
-            _apiService = apiService;
+            _foodInformation = foodInformation;
         }
 
         [HttpGet("foods/{foodName}")]
-        public async Task<IActionResult> GetFoodNutrition(string foodName)
+        public async Task<IActionResult> GetFoodNutrition(FoodCategory foodCategory,string foodName)
         {
-            try
-            {
-                var foodData = await _apiService.GetFoodData(foodName);
+            var result = await _foodInformation.GetFoodNutrition(foodCategory, foodName);
 
-                if (foodData != null)
-                {
-                    return Ok(new
-                    {
-                        FoodName = foodData.FoodName,
-                        Nutrients = new
-                        {
-                            Calories = foodData.Calories,
-                            Protein = foodData.Protein,
-                            Fat = foodData.Fat,
-                            Carbohydrate = foodData.Carbohydrate,
-                            Fiber = foodData.Fiber
-                        }
-                    });
-                }
-                else if (foodData == null)
-                {
-                    return NotFound($"Informações sobre o {foodName} não encontradas");
-                }
-                else
-                {
-                    // Handle case when foodData.Nutrients is null
-                    return StatusCode(500, $"As informações sobre os nutrientes para {foodName} não estão disponíveis");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro ao processar a solicitação: {ex.Message}");
-            }
+            return Ok(result);
+        }
+
+        [HttpGet("foods/fruit/{fruitName}")]
+        public async Task<IActionResult> GetFruit(string fruitName)
+        {
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.Fruits, fruitName);
+
+            return Ok(result);
         }
     }
 }
