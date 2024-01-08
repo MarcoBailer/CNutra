@@ -1,4 +1,6 @@
 using Microsoft.OpenApi.Models;
+using Nutricao.Core.Interfaces;
+using Nutricao.Core.Service;
 using Nutricao.Core.Service.Api;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,9 @@ builder.Services.AddSingleton<FoodDataCentralApiService>(provider =>
     var dataType = builder.Configuration["dataType"];
     return new FoodDataCentralApiService(apiKey,dataType);
 });
+
+// Inject app Dependencies (Dependency Injection)
+builder.Services.AddScoped<IFoodInfomation, FoodInformation>();
 
 var app = builder.Build();
 

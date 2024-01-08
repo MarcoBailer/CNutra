@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using FoodDataCentral.Models;
 using Newtonsoft.Json;
 using Nutricao.Models;
 
@@ -17,11 +18,18 @@ namespace Nutricao.Core.Service.Api
             _dataType = dataType;
         }
 
-        public async Task<Nutrients> GetFoodData(string foodName)
+        public async Task<Nutrients> GetFruit(string foodName)
+        {
+            return await GetFoodByCategoryAndName(FoodCategory.Fruits, foodName);
+        }
+
+        public async Task<Nutrients> GetFoodByCategoryAndName(FoodCategory foodCategory, string foodName)
         {
             try
             {
-                var apiUrl = $"https://api.nal.usda.gov/fdc/v1/foods/search?api_key={_apiKey}&query={foodName}&dataType={_dataType}";
+                var categoryString = EnumExtensions.GetDescription(foodCategory);
+
+                var apiUrl = $"https://api.nal.usda.gov/fdc/v1/foods/search?api_key={_apiKey}&query={foodName}&dataType={_dataType}&FoodCategory={categoryString}";
 
                 var response = await _httpClient.GetAsync(apiUrl);
 
@@ -35,20 +43,40 @@ namespace Nutricao.Core.Service.Api
 
                     if (result?.Foods != null && result.Foods.Count > 0)
                     {
-                        var firstFood = result.Foods[0];
+                        string bestMatch = null;
+                        int bestMatchDistance = int.MaxValue;
 
-                        var foodInfo = new Nutrients
+                        foreach (var food in result.Foods)
                         {
-                            FoodName = firstFood.Description,
-                            Protein = firstFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Protein")?.Value ?? 0,
-                            Fat = firstFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Total lipid (fat)")?.Value ?? 0,
-                            Carbohydrate = firstFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Carbohydrate, by difference")?.Value ?? 0,
-                            Calories = (int)(firstFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Energy")?.Value ?? 0),
-                            Fiber = firstFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Fiber, total dietary")?.Value ?? 0,
-                        };
+                            int distance = CalculateLevenshteinDistance(food.Description.ToLower(), foodName.ToLower());
 
-                        return foodInfo;
+                            if (distance < bestMatchDistance)
+                            {
+                                bestMatch = food.Description;
+                                bestMatchDistance = distance;
+                            }
+                        }
+
+                        // Agora, bestMatch contém o nome que mais se assemelha ao input
+                        // pode continuar o processo para obter os nutrientes desse alimento
+
+                        var bestMatchFood = result.Foods.FirstOrDefault(f => f.Description == bestMatch);
+
+                        if (bestMatchFood != null)
+                        {
+                            var foodInfo = new Nutrients
+                            {
+                                FoodName = bestMatchFood.Description,
+                                Protein = bestMatchFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Protein")?.Value ?? 0,
+                                Fat = bestMatchFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Total lipid (fat)")?.Value ?? 0,
+                                Carbohydrate = bestMatchFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Carbohydrate, by difference")?.Value ?? 0,
+                                Calories = (int)(bestMatchFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Energy")?.Value ?? 0),
+                                Fiber = bestMatchFood.FoodNutrients.FirstOrDefault(n => n.NutrientName == "Fiber, total dietary")?.Value ?? 0,
+                            };
+                            return foodInfo;
+                        }
                     }
+                    return null;
                 }
                 else
                 {
@@ -61,6 +89,31 @@ namespace Nutricao.Core.Service.Api
             }
 
             return null;
+        }
+
+        private int CalculateLevenshteinDistance(string a, string b)
+        {
+            // Implementação básica do algoritmo de distância de Levenshtein
+            // Pode ser substituído por uma biblioteca mais avançada se necessário
+
+            int[,] dp = new int[a.Length + 1, b.Length + 1];
+
+            for (int i = 0; i <= a.Length; i++)
+            {
+                for (int j = 0; j <= b.Length; j++)
+                {
+                    if (i == 0)
+                        dp[i, j] = j;
+                    else if (j == 0)
+                        dp[i, j] = i;
+                    else
+                        dp[i, j] = Math.Min(Math.Min(dp[i - 1, j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1),
+                                                     dp[i, j - 1] + 1),
+                                            dp[i - 1, j] + 1);
+                }
+            }
+
+            return dp[a.Length, b.Length];
         }
     }
 }
