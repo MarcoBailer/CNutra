@@ -1,7 +1,5 @@
 ﻿using System.Net.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Nutricao.Core.Service.Api;
 using Nutricao.Models;
 
 namespace Nutricao.Core.Service.Api
@@ -10,28 +8,28 @@ namespace Nutricao.Core.Service.Api
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
+        private readonly string _dataType;
 
-        public FoodDataCentralApiService(string apiKey)
+        public FoodDataCentralApiService(string apiKey,string dataType)
         {
             _httpClient = new HttpClient();
             _apiKey = apiKey;
+            _dataType = dataType;
         }
 
         public async Task<Nutrients> GetFoodData(string foodName)
         {
             try
             {
-                var apiUrl = $"https://api.nal.usda.gov/fdc/v1/foods/search?api_key={_apiKey}&query={foodName}";
+                var apiUrl = $"https://api.nal.usda.gov/fdc/v1/foods/search?api_key={_apiKey}&query={foodName}&dataType={_dataType}";
 
                 var response = await _httpClient.GetAsync(apiUrl);
 
                 Console.WriteLine($"Request URL: {apiUrl}");
-                Console.WriteLine($"Response Status Code: {response.StatusCode}");
 
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Response Content: {content}");
 
                     var result = JsonConvert.DeserializeObject<ApiResponse>(content);
 

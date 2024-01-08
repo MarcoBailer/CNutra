@@ -1,7 +1,4 @@
-﻿using FoodDataCentral.Models;
-using Nutricao.Models;
-
-namespace Nutricao.Core.Service.Api
+﻿namespace Nutricao.Core.Service.Api
 {
     public class ApiResponse
     {

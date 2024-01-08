@@ -14,7 +14,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<FoodDataCentralApiService>(provider =>
 {
     var apiKey = builder.Configuration["FoodDataCentralApiKey"];
-    return new FoodDataCentralApiService(apiKey);
+    var dataType = builder.Configuration["dataType"];
+    return new FoodDataCentralApiService(apiKey,dataType);
 });
 
 var app = builder.Build();
