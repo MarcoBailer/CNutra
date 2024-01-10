@@ -1,40 +1,40 @@
 ﻿using System.ComponentModel;
 
 public enum FoodCategory
-{
-    [Description("Fruits%20and%20Fruits%20Juices")]
+{ 
+    [Description("Fruits and Fruits Juices")]
     Fruits,
 
-    [Description("Vegetables%20and%20Vegetables%20Product")]
+    [Description("Vegetables and Vegetable Products")]
     Vegetables,
 
-    [Description("Dairy%20and%20Egg%20Products")]
+    [Description("Dairy and Egg Products")]
     DairyEggs,
 
-    [Description("Beef%20Products")]
+    [Description("Beef Products")]
     Beef,
 
     [Description("Beverages")]
     Beverages,
 
-    [Description("BreakFast%20Cereals")]
+    [Description("Breakfast Cereals")]
     BreakFastCereals,
 
-    [Description("Fats%20and%20Oils")]
+    [Description("Fats and Oils")]
     FatsOils,
 
-    [Description("Finfish%20and%20Shellfish%20Products")]
+    [Description("Finfish and Shellfish Products")]
     FinfishShellfish,
 
-    [Description("Legumes%20and%20Legume%20Products")]
+    [Description("Legumes and Legume Products")]
     Legumes,
 
-    [Description("Nut%20and%20Seed%20Products")]
+    [Description("Nut and Seed Products")]
     NutSeed,
 
-    [Description("Pork%20Products")]
+    [Description("Pork Products")]
     Pork,
 
-    [Description("Poultry%20Products")]
+    [Description("Poultry Products")]
     Poultry,
 }
