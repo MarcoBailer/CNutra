@@ -26,6 +26,7 @@ namespace Nutricao.Core.Service.Api
                 var apiUrl = $"https://api.nal.usda.gov/fdc/v1/foods/search?api_key={_apiKey}&query={foodName}&dataType={_dataType}&FoodCategory={categoryString}";
 
                 var response = await _httpClient.GetAsync(apiUrl);
+                
 
                 Console.WriteLine($"Request URL: {apiUrl}");
 
@@ -33,9 +34,12 @@ namespace Nutricao.Core.Service.Api
                 {
                     var content = await response.Content.ReadAsStringAsync();
 
+                    var testHits = JsonConvert.DeserializeObject(content);
+                    
+
                     var result = JsonConvert.DeserializeObject<ApiResponse>(content);
 
-                    if (result?.Foods != null && result.Foods.Count > 0)
+                    if (result?.Foods != null && result.Foods.Count > 0 && result.totalHits > 0)
                     {
                         string bestMatch = null;
                         int bestMatchDistance = int.MaxValue;
@@ -69,6 +73,9 @@ namespace Nutricao.Core.Service.Api
                             };
                             return foodInfo;
                         }
+                    }else if(result.totalHits == 0)
+                    {
+                        Console.WriteLine("Nenhum resultado encontrado");
                     }
                     return null;
                 }

@@ -27,7 +27,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/fruit/{fruitName}")]
         public async Task<IActionResult> GetFruit(string fruitName)
         {
-            var result = await _foodInformation.GetFruit(fruitName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.Fruits,fruitName);
 
             return Ok(result);
         }
@@ -35,7 +35,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/vegetable/{vegetableName}")]
         public async Task<IActionResult> GetVegetable(string vegetableName)
         {
-            var result = await _foodInformation.GetVegetable(vegetableName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.Vegetables, vegetableName);
 
             return Ok(result);
         }
@@ -43,7 +43,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/beef/{beefName}")]
         public async Task<IActionResult> GetBeef(string beefName)
         {
-            var result = await _foodInformation.GetBeef(beefName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.Beef, beefName);
 
             return Ok(result);
         }
@@ -51,7 +51,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/dairyeggs/{dairyEggsName}")]
         public async Task<IActionResult> GetDairyEggs(string dairyEggsName)
         {
-            var result = await _foodInformation.GetDairyAndEggs(dairyEggsName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.DairyEggs, dairyEggsName);
 
             return Ok(result);
         }
@@ -59,7 +59,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/beverages/{beveragesName}")]
         public async Task<IActionResult> GetBeverages(string beveragesName)
         {
-            var result = await _foodInformation.GetBeverages(beveragesName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.Beverages, beveragesName);
 
             return Ok(result);
         }
@@ -67,7 +67,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/breakfastcereals/{breakFastCerealsName}")]
         public async Task<IActionResult> GetBreakFastCereals(string breakFastCerealsName)
         {
-            var result = await _foodInformation.GetBreakFastCereals(breakFastCerealsName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.BreakFastCereals, breakFastCerealsName);
 
             return Ok(result);
         }
@@ -75,7 +75,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/fatsoils/{fatsOilsName}")]
         public async Task<IActionResult> GetFatsOils(string fatsOilsName)
         {
-            var result = await _foodInformation.GetFatsOils(fatsOilsName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.FatsOils, fatsOilsName);
 
             return Ok(result);
         }
@@ -83,7 +83,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/finfishshellfish/{finfishShellfishName}")]
         public async Task<IActionResult> GetFinfishShellfish(string finfishShellfishName)
         {
-            var result = await _foodInformation.GetFinfishShellfish(finfishShellfishName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.FinfishShellfish, finfishShellfishName);
 
             return Ok(result);
         }
@@ -91,7 +91,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/legumes/{legumesName}")]
         public async Task<IActionResult> GetLegumes(string legumesName)
         {
-            var result = await _foodInformation.GetLegumes(legumesName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.Legumes, legumesName);
 
             return Ok(result);
         }
@@ -99,7 +99,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/nutseed/{nutSeedName}")]
         public async Task<IActionResult> GetNutSeed(string nutSeedName)
         {
-            var result = await _foodInformation.GetNutSeed(nutSeedName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.NutSeed, nutSeedName);
 
             return Ok(result);
         }
@@ -107,7 +107,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/pork/{porkName}")]
         public async Task<IActionResult> GetPork(string porkName)
         {
-            var result = await _foodInformation.GetPork(porkName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.Pork, porkName);
 
             return Ok(result);
         }
@@ -115,7 +115,7 @@ namespace Nutricao.Controllers
         [HttpGet("foods/poultry/{poultryName}")]
         public async Task<IActionResult> GetPoultry(string poultryName)
         {
-            var result = await _foodInformation.GetPoultry(poultryName);
+            var result = await _foodInformation.GetFoodNutrition(FoodCategory.Poultry, poultryName);
 
             return Ok(result);
         }
