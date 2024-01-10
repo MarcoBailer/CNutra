@@ -2,39 +2,39 @@
 
 public enum FoodCategory
 {
-    [Description("Fruits and Fruits Juices")]
+    [Description("Fruits%20and%20Fruits%20Juices")]
     Fruits,
 
-    [Description("Vegetables and Vegetables Product")]
+    [Description("Vegetables%20and%20Vegetables%20Product")]
     Vegetables,
 
-    [Description("Dairy and Egg Products")]
+    [Description("Dairy%20and%20Egg%20Products")]
     DairyEggs,
 
-    [Description("Beef Products")]
+    [Description("Beef%20Products")]
     Beef,
 
     [Description("Beverages")]
     Beverages,
 
-    [Description("BreakFast Cereals")]
+    [Description("BreakFast%20Cereals")]
     BreakFastCereals,
 
-    [Description("Fats and Oils")]
+    [Description("Fats%20and%20Oils")]
     FatsOils,
 
-    [Description("Finfish and Shellfish Products")]
+    [Description("Finfish%20and%20Shellfish%20Products")]
     FinfishShellfish,
 
-    [Description("Legumes and Legume Products")]
+    [Description("Legumes%20and%20Legume%20Products")]
     Legumes,
 
-    [Description("Nut and Seed Products")]
+    [Description("Nut%20and%20Seed%20Products")]
     NutSeed,
 
-    [Description("Pork Products")]
+    [Description("Pork%20Products")]
     Pork,
 
-    [Description("Poultry Products")]
+    [Description("Poultry%20Products")]
     Poultry,
 }
