@@ -17,67 +17,6 @@ namespace Nutricao.Core.Service.Api
             _apiKey = apiKey;
             _dataType = dataType;
         }
-
-        public async Task<Nutrients> GetFruit(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.Fruits, foodName);
-        }
-
-        public async Task<Nutrients> GetVegetable(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.Vegetables, foodName);
-        }
-
-        public async Task<Nutrients> GetBeef(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.Beef, foodName);
-        }
-
-        public async Task<Nutrients> GetDairyAndEggs(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.DairyEggs, foodName);
-        }
-
-        public async Task<Nutrients> GetBeverages(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.Beverages, foodName);
-        }
-
-        public async Task<Nutrients> GetBreakFastCereals(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.BreakFastCereals, foodName);
-        }
-
-        public async Task<Nutrients> GetFatsOils(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.FatsOils, foodName);
-        }
-
-        public async Task<Nutrients> GetFinfishShellfish(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.FinfishShellfish, foodName);
-        }
-
-        public async Task<Nutrients> GetLegumes(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.Legumes, foodName);
-        }
-
-        public async Task<Nutrients> GetNutSeed(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.NutSeed, foodName);
-        }
-
-        public async Task<Nutrients> GetPork(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.Pork, foodName);
-        }
-
-        public async Task<Nutrients> GetPoultry(string foodName)
-        {
-            return await GetFoodByCategoryAndName(FoodCategory.Poultry, foodName);
-        }
-
         public async Task<Nutrients> GetFoodByCategoryAndName(FoodCategory foodCategory, string foodName)
         {
             try
