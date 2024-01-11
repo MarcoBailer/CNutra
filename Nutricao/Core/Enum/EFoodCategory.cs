@@ -2,7 +2,7 @@
 
 public enum EFoodCategory
 { 
-    [Description("Fruits and Fruits Juices")]
+    [Description("Fruits and Fruit Juices")]
     Fruits,
 
     [Description("Vegetables and Vegetable Products")]
