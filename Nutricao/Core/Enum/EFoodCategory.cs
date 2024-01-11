@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-public enum FoodCategory
+public enum EFoodCategory
 { 
     [Description("Fruits and Fruits Juices")]
     Fruits,

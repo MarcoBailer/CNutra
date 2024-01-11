@@ -5,6 +5,6 @@ namespace Nutricao.Core.Interfaces
 {
     public interface IFoodInfomation
     {
-        Task<IActionResult> GetFoodNutrition(FoodCategory foodCategory, string foodName);
+        Task<IActionResult> GetFoodNutrition(EFoodCategory foodCategory, string foodName);
     }
 }

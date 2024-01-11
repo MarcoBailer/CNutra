@@ -17,7 +17,7 @@ namespace Nutricao.Core.Service.Api
             _apiKey = apiKey;
             _dataType = dataType;
         }
-        public async Task<Nutrients> GetFoodByCategoryAndName(FoodCategory foodCategory, string foodName)
+        public async Task<Nutrients> GetFoodByCategoryAndName(EFoodCategory foodCategory, string foodName)
         {
             try
             {
@@ -34,31 +34,30 @@ namespace Nutricao.Core.Service.Api
                 {
                     var content = await response.Content.ReadAsStringAsync();
 
-                    var testHits = JsonConvert.DeserializeObject(content);
-                    
-
                     var result = JsonConvert.DeserializeObject<ApiResponse>(content);
 
-                    if (result?.Foods != null && result.Foods.Count > 0 && result.totalHits > 0)
+                    var newResult = await VerifyFoodCategory(result.Foods, foodCategory);
+
+                    if (newResult != null && newResult.Count > 0)
                     {
                         string bestMatch = null;
                         int bestMatchDistance = int.MaxValue;
 
-                        foreach (var food in result.Foods)
+                        foreach (var food in newResult)
                         {
-                            int distance = CalculateLevenshteinDistance(food.Description.ToLower(), foodName.ToLower());
+                                int distance = CalculateLevenshteinDistance(food.Description.ToLower(), foodName.ToLower());
 
-                            if (distance < bestMatchDistance)
-                            {
-                                bestMatch = food.Description;
-                                bestMatchDistance = distance;
-                            }
+                                if (distance < bestMatchDistance)
+                                {
+                                    bestMatch = food.Description;
+                                    bestMatchDistance = distance;
+                                }
                         }
 
                         // Agora, bestMatch contém o nome que mais se assemelha ao input
                         // pode continuar o processo para obter os nutrientes desse alimento
 
-                        var bestMatchFood = result.Foods.FirstOrDefault(f => f.Description == bestMatch);
+                        var bestMatchFood = newResult.FirstOrDefault(f => f.Description == bestMatch);
 
                         if (bestMatchFood != null)
                         {
@@ -73,9 +72,6 @@ namespace Nutricao.Core.Service.Api
                             };
                             return foodInfo;
                         }
-                    }else if(result.totalHits == 0)
-                    {
-                        Console.WriteLine("Nenhum resultado encontrado");
                     }
                     return null;
                 }
@@ -91,6 +87,23 @@ namespace Nutricao.Core.Service.Api
 
             return null;
         }
+
+        private async Task<List<FoodDetails>> VerifyFoodCategory(List<FoodDetails> foods, EFoodCategory category)
+        {
+            var foodCategory = EnumExtensions.GetDescription(category);
+            var filteredFoods = new List<FoodDetails>();
+
+            foreach (var food in foods)
+            {
+                if (food.FoodCategory == foodCategory)
+                {
+                    filteredFoods.Add(food);
+                }
+            }
+
+            return filteredFoods;
+        }
+
 
         private int CalculateLevenshteinDistance(string a, string b)
         {
