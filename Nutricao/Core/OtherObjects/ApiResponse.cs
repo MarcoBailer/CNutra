@@ -3,6 +3,5 @@
     public class ApiResponse
     {
         public List<FoodDetails> Foods { get; set; }
-        public int totalHits { get; set; }
     }
 }

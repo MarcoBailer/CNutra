@@ -13,7 +13,7 @@ namespace Nutricao.Core.Service
             _apiService = apiService;
         }
 
-        public async Task<IActionResult> GetFoodNutrition(FoodCategory foodCategory, string foodName)
+        public async Task<IActionResult> GetFoodNutrition(EFoodCategory foodCategory, string foodName)
         {
             try
             {
