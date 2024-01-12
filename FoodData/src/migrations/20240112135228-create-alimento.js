@@ -21,11 +21,11 @@ module.exports = {
       lipidios: {
         type: Sequelize.DOUBLE
       },
-      vitaminas: {
-        type: Sequelize.INTEGER,
-      },
       calorias: {
         type: Sequelize.DOUBLE
+      },
+      vitaminas: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

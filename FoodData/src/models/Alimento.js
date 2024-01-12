@@ -19,11 +19,11 @@ module.exports = (sequelize, DataTypes) => {
     proteinas: DataTypes.DOUBLE,
     lipidios: DataTypes.DOUBLE,
     calorias: DataTypes.DOUBLE,
-    vitaminas: DataTypes.INTEGER
+    vitaminas: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Alimento',
-    tableName: 'alimentos'
+    tableName: 'alimentos',
   });
   return Alimento;
 };

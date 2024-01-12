@@ -4,6 +4,12 @@ class Service {
     constructor(model){
         this.model = model;
     }
+    // vitaminas e uma string com as vitaminas separadas por virgula e seus valores sao double
+    // exemplo: "A: 767,C: 1677.6,B1: 0.02"
+    //deve ser convertido para um objetos
+    // exemplo: {A: 767,C: 1677.6,B1: 0.02}
+    // getAll e getById devem retornar um objeto com as vitaminas
+    
     async getAll(){
         try{
             return await database[this.model].findAll();
