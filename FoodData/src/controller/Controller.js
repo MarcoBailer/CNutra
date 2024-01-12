@@ -4,7 +4,7 @@ class Controller {
     }
     async getAll(req,res){
         try{
-            const allEntities = await this.entityService.getAll();
+            const allEntities = await this.entityService.getAllService();
             return res.status(200).json(allEntities);
         }catch(error){
             return res.status(500).json(error.message);
@@ -13,7 +13,7 @@ class Controller {
     async getById(req,res){
         const { id } = req.params;
         try{
-            const entity = await this.entityService.getById(id);
+            const entity = await this.entityService.getByIdService(id);
             return res.status(200).json(entity);
         }catch(error){
             return res.status(500).json(error.message);
@@ -22,7 +22,7 @@ class Controller {
     async create(req,res){
         const entity = req.body;
         try{
-            const createdEntity = await this.entityService.create(entity);
+            const createdEntity = await this.entityService.createService(entity);
             return res.status(201).json(createdEntity);
         }catch(error){
             return res.status(500).json(error.message);
@@ -32,7 +32,7 @@ class Controller {
         const { id } = req.params;
         const entity = req.body;
         try{
-            const updatedEntity = await this.entityService.update(id, entity);
+            const updatedEntity = await this.entityService.updateService(id, entity);
             return res.status(200).json(updatedEntity);
             if(!updatedEntity){
                 return res.status(404).json({message: 'Not found'});
@@ -44,7 +44,7 @@ class Controller {
     async delete(req,res){
         const { id } = req.params;
         try{
-            await this.entityService.delete(id);
+            await this.entityService.deleteService(id);
             return res.status(200).json({message: 'Deleted'});
         }catch(error){
             return res.status(500).json(error.message);
