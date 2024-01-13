@@ -1,3 +1,5 @@
+//servicos com metodos responsaveis por fazer a comunicacao com o banco de dados
+
 const database = require('../models');
 const Vitaminas = require('../models/otherObjects/Vitaminas.js');
 class Service {
@@ -37,6 +39,14 @@ class Service {
     async createService(entity){
         try{
             return await database[this.model].create(entity);
+        }catch(error){
+            throw error;
+        }
+    }
+    //recebe um array de entidades
+    async createManyService(entities){
+        try{
+            return await database[this.model].bulkCreate(entities);
         }catch(error){
             throw error;
         }
