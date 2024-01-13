@@ -2,9 +2,9 @@
 
 Bem-vindo ao Nutrição App! Este projeto tem como objetivo ajudar os usuários a cuidarem de sua alimentação, fornecendo funcionalidades como cálculo de calorias, criação de dietas personalizadas, acompanhamento, e muito mais.
 
-## Funcionalidades Atuais 📊
+## Funcionalidades sendo trabalhadas 📊
 
-Atualmente, o projeto oferece as seguintes funcionalidades:
+Atualmente, estou trabalhando nas seguintes funcionalidades:
 
 - **Calculadora de Calorias:** Determine o valor calórico dos alimentos e refeições.
 - **Dieta Personalizada:** Crie dietas adaptadas às necessidades e preferências do usuário.
@@ -22,12 +22,13 @@ Estou trabalhando arduamente para adicionar mais recursos, incluindo:
 
 ## Como Iniciar 🚗
 
-- Faze de desenvolvimento local
+- Fase de desenvolvimento local
 
 ## Tecnologias Utilizadas 💻
 
 - .NET Core
+- JavaScript
 
 ## Agradecimentos 🙌
 
-Obrigado por contribuir para tornar o Nutrição App um recurso valioso para cuidar da saúde e bem-estar! Seja parte dessa jornada nutritiva comigo! 🌱
+Obrigado por contribuir para tornar o CNutra um recurso valioso para cuidar da saúde e bem-estar! Seja parte dessa jornada nutritiva comigo! 🌱
