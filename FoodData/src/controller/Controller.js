@@ -28,6 +28,16 @@ class Controller {
             return res.status(500).json(error.message);
         }
     }
+    //recebe um array de entidades
+    async createMany(req,res){
+        const entities = req.body;
+        try{
+            const createdEntities = await this.entityService.createManyService(entities);
+            return res.status(201).json(createdEntities);
+        }catch(error){
+            return res.status(500).json(error.message);
+        }
+    }
     async update(req,res){
         const { id } = req.params;
         const entity = req.body;
