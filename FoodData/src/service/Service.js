@@ -1,6 +1,7 @@
 //servicos com metodos responsaveis por fazer a comunicacao com o banco de dados
 
 const database = require('../models');
+const Minerais = require('../models/otherObjects/Minerais.js');
 const Vitaminas = require('../models/otherObjects/Vitaminas.js');
 class Service {
     constructor(model){
@@ -13,6 +14,9 @@ class Service {
             const entityList = entities.map(entity => {
                 if(entity && entity.vitaminas){
                     entity.vitaminas = Vitaminas.parseVitaminasString(entity.vitaminas);
+                } 
+                if(entity && entity.minerais){
+                    entity.minerais = Minerais.parseMineraisString(entity.minerais);
                 }
                 return entity;
             });
@@ -29,6 +33,9 @@ class Service {
     
             if (entity && entity.vitaminas) {
                 entity.vitaminas = Vitaminas.parseVitaminasString(entity.vitaminas);
+            } 
+            if(entity && entity.minerais){
+                entity.minerais = Minerais.parseMineraisString(entity.minerais);
             }
     
             return entity;
