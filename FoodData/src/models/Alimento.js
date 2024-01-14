@@ -11,12 +11,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Alimento.init({
+    grupo: DataTypes.STRING,
     nome: DataTypes.STRING,
     carboidratos: DataTypes.DOUBLE,
     proteinas: DataTypes.DOUBLE,
     lipidios: DataTypes.DOUBLE,
     calorias: DataTypes.DOUBLE,
-    vitaminas: DataTypes.STRING
+    vitaminas: DataTypes.STRING,
+    minerais: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Alimento',
