@@ -1,5 +1,6 @@
 const XLSX = require('xlsx');
 const fs = require('fs');
+const categorias = require('./categoria');
 
 // Ler o arquivo Excel
 const workbook = XLSX.readFile('./arquivo_base/tabela.xlsx');
@@ -22,6 +23,7 @@ for (let i = 0; i < json_data.length; i++) {
 
   const alimentoFormatado = {
     grupo: dados['Grupo'],
+    categoria_id: categorias[dados['Grupo']],
     nome: dados['Descrição do Alimento'],
     carboidratos: dados['Carboidrato(g)'],
     proteinas: dados['Proteína(g)'],
@@ -30,8 +32,9 @@ for (let i = 0; i < json_data.length; i++) {
     fibbras: dados['Fibra(g)'],
     vitaminas: `Vitamina A: ${dados['Retinol(mcg)'] || 'NA'}, Vitamina C: ${dados['VitaminaC(mg)'] || 'NA'} , Vitamina B1: ${dados['Tiamina(mg)'] || 'NA'}, Vitamina B2: ${dados['Riboflavina(mg)'] || 'NA'}, Vitamina B6: ${dados['Piridoxina(mg)'] || 'NA'}, Vitamina B3: ${dados['Niacina(mg)'] || 'NA'}`,
     minerais: `Cálcio: ${dados['Calcio(mg)'] || 'NA'}, Magnésio: ${dados['Magnesio(mg)'] || 'NA'}, Manganês: ${dados['Manganes(mg)'] || 'NA'}, Fósforo: ${dados['Fosforo(mg)'] || 'NA'}, Ferro: ${dados['Ferro(mg)'] || 'NA'}, Sódio: ${dados['Sodio(mg)'] || 'NA'}, Potássio: ${dados['Potassio(mg)'] || 'NA'}, Cobre: ${dados['Cobre(mcg)'] || 'NA'}, Zinco: ${dados['Zinco(mg)'] || 'NA'}, Selênio: ${dados['Selenio(mcg)'] || 'NA'}`,
+    createdAt: new Date(),
+    updatedAt: new Date()
   };
-
   alimentosFormatados.push(alimentoFormatado);
 }
 

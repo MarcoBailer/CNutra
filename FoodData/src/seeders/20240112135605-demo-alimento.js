@@ -6,7 +6,7 @@ module.exports = {
     
     await queryInterface.bulkInsert('alimentos',  [
       {
-        categoria_id: 17,
+        categoria_id: 1,
         grupo: "Cereais e derivados",
         nome: "Arroz, integral, cozido",
         carboidratos: 25.80975,
