@@ -1,3 +1,5 @@
+//Criar classe generica para transformar os dados de vitaminas em um objeto
+
 class Vitaminas {
     constructor(nome, quantidade) {
         this.nome = nome;
