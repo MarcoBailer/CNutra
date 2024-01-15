@@ -20,10 +20,6 @@ Estou trabalhando arduamente para adicionar mais recursos, incluindo:
 
 ...
 
-## Como Iniciar 🚗
-
-- Fase de desenvolvimento local
-
 ## Tecnologias Utilizadas 💻
 
 - .NET Core
