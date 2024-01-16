@@ -1,5 +1,5 @@
 //servicos com metodos responsaveis por fazer a comunicacao com o banco de dados
-
+const { Op } = require('sequelize');
 const database = require('../models');
 const Minerais = require('../models/otherObjects/Minerais.js');
 const Vitaminas = require('../models/otherObjects/Vitaminas.js');
@@ -41,6 +41,39 @@ class Service {
             return entity;
         } catch (error) {
             throw error;
+        }
+    }
+    async getByNomeService(nome){
+        try{
+            const entity = await database[this.model].findAll({
+                where: {
+                    nome:{
+                        [Op.like]: `%${nome}%`
+                    }
+                }
+            })
+            return entity;
+        }catch(error){
+            throw error;
+
+        }
+    }
+    async getByNomeAndCategoriaService(nome, grupo){
+        try{
+            const entity = await database[this.model].findAll({
+                where: {
+                    nome:{
+                        [Op.like]: `%${nome}%`
+                    },
+                    grupo:{
+                        [Op.like]: `%${grupo}%`  
+                    } 
+                }
+            })
+            return entity;
+        }catch(error){
+            throw error;
+
         }
     }
     async createService(entity){

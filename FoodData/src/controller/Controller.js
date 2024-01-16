@@ -19,6 +19,24 @@ class Controller {
             return res.status(500).json(error.message);
         }
     }
+    async getByName(req,res){
+        const { nome } = req.params;
+        try{
+            const entity = await this.entityService.getByNomeService(nome);
+            return res.status(200).json(entity);
+        }catch(error){
+            return res.status(500).json(error.message);
+        }
+    }
+    async getByNameAndCategoria(req,res){
+        const { nome, grupo } = req.params;
+        try{
+            const entity = await this.entityService.getByNomeAndCategoriaService(nome, grupo);
+            return res.status(200).json(entity);
+        }catch(error){
+            return res.status(500).json(error.message);
+        }
+    }
     async create(req,res){
         const entity = req.body;
         try{
