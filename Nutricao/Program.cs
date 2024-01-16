@@ -13,10 +13,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Config Api
-builder.Services.AddSingleton<FoodDataCentralApiService>(provider =>
+builder.Services.AddSingleton<FoodDataCentralApiConnection>(provider =>
 {
     var apiKey = builder.Configuration["FoodDataCentralApiKey"];
-    return new FoodDataCentralApiService(apiKey);
+    return new FoodDataCentralApiConnection(apiKey);
 });
 
 // Inject app Dependencies (Dependency Injection)

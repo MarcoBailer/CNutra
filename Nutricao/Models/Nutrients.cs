@@ -4,11 +4,13 @@ namespace Nutricao.Models
 {
     public class Nutrients
     {
-        public string FoodName { get; set; }
-        public int Calories { get; set; }
-        public double Protein { get; set; }
-        public double Fat { get; set; }
-        public double Fiber { get; set; }
-        public double Carbohydrate { get; set; }
+        public string Nome { get; set; }
+        public double Calorias { get; set; }
+        public double Proteinas { get; set; }
+        public double Lipidios { get; set; }
+        public double Carboidratos { get; set; }
+        public string Vitaminas { get; set; }
+        public string Minerais { get; set; }
+        public string Grupo { get; set; }
     }
 }

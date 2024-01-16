@@ -6,33 +6,36 @@ namespace Nutricao.Core.Service
 {
     public class FoodInformationService : IFoodInfomation
     {
-        private readonly FoodDataCentralApiService _apiService;
+        private readonly FoodDataCentralApiConnection _apiService;
 
-        public FoodInformationService(FoodDataCentralApiService apiService)
+        public FoodInformationService(FoodDataCentralApiConnection apiService)
         {
             _apiService = apiService;
         }
-
         public async Task<IActionResult> GetFoodNutrition(EFoodCategory foodCategory, string foodName)
         {
             try
             {
-                var foodData = await _apiService.GetFoodByCategoryAndName(foodCategory, foodName);
+                var foodList = await _apiService.GetFoodByCategoryAndName(foodCategory, foodName);
 
-                if (foodData != null)
+                if (foodList != null && foodList.Any())
                 {
-                    return new OkObjectResult(new
+                    var result = foodList.Select(foodData => new
                     {
-                        FoodName = foodData.FoodName,
+                        FoodName = foodData.Nome,
                         Nutrients = new
                         {
-                            Calories = foodData.Calories,
-                            Protein = foodData.Protein,
-                            Fat = foodData.Fat,
-                            Carbohydrate = foodData.Carbohydrate,
-                            Fiber = foodData.Fiber
+                            Nome = foodData.Nome,
+                            Valor = foodData.Grupo,
+                            Carboidratos = foodData.Carboidratos,
+                            Proteinas = foodData.Proteinas,
+                            Lipidios = foodData.Lipidios,
+                            Calorias = foodData.Calorias,
+                            Vitaminas = foodData.Vitaminas,
+                            Minerais = foodData.Minerais
                         }
                     });
+                    return new OkObjectResult(result);
                 }
                 else
                 {
