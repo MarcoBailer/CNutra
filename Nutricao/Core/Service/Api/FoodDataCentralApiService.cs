@@ -11,11 +11,10 @@ namespace Nutricao.Core.Service.Api
         private readonly string _apiKey;
         private readonly string _dataType;
 
-        public FoodDataCentralApiService(string apiKey,string dataType)
+        public FoodDataCentralApiService(string apiKey)
         {
             _httpClient = new HttpClient();
             _apiKey = apiKey;
-            _dataType = dataType;
         }
         public async Task<Nutrients> GetFoodByCategoryAndName(EFoodCategory foodCategory, string foodName)
         {
@@ -23,11 +22,10 @@ namespace Nutricao.Core.Service.Api
             {
                 var categoryString = EnumExtensions.GetDescription(foodCategory);
 
-                var apiUrl = $"https://api.nal.usda.gov/fdc/v1/foods/search?api_key={_apiKey}&query={foodName}&dataType={_dataType}&FoodCategory={categoryString}";
+                var apiUrl = $"http://localhost:3000/alimentos/nome/{foodName}/grupo/{foodCategory}";
 
                 var response = await _httpClient.GetAsync(apiUrl);
                 
-
                 Console.WriteLine($"Request URL: {apiUrl}");
 
                 if (response.IsSuccessStatusCode)

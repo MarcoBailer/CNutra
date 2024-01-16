@@ -2,39 +2,45 @@
 
 public enum EFoodCategory
 { 
-    [Description("Fruits and Fruit Juices")]
-    Fruits,
+    [Description("Cereais e derivados")]
+    Cereais,
 
-    [Description("Vegetables and Vegetable Products")]
-    Vegetables,
+    [Description("Verduras, hortaliças e derivados")]
+    Verduras,
 
-    [Description("Dairy and Egg Products")]
-    DairyEggs,
+    [Description("Frutas e derivados")]
+    Frutas,
 
-    [Description("Beef Products")]
-    Beef,
+    [Description("Gorduras e óleos")]
+    OleosEGorduras,
 
-    [Description("Beverages")]
-    Beverages,
+    [Description("Pescados e frutos do mar")]
+    Pescados,
 
-    [Description("Breakfast Cereals")]
-    BreakFastCereals,
+    [Description("Carnes e derivados")]
+    CarneEDerivados,
 
-    [Description("Fats and Oils")]
-    FatsOils,
+    [Description("Leite e derivados")]
+    LeiteEDerivados,
 
-    [Description("Finfish and Shellfish Products")]
-    FinfishShellfish,
+    [Description("Bebidas (alcoólicas e não alcoólicas)")]
+    Bebidas,
 
-    [Description("Legumes and Legume Products")]
-    Legumes,
+    [Description("Ovos e derivados")]
+    OvosEDerivados,
 
-    [Description("Nut and Seed Products")]
-    NutSeed,
+    [Description("Produtos açucarados")]
+    Açucarados,
 
-    [Description("Pork Products")]
-    Pork,
+    [Description("Miscelâneas")]
+    Micelania,
 
-    [Description("Poultry Products")]
-    Poultry,
+    [Description("Outros alimentos industrializados")]
+    OutrosIndustrializados,
+
+    [Description("Alimentos preparados")]
+    AlimentosPreparados,
+
+    [Description("Leguminosas e derivados")]
+    Leguminosas
 }
