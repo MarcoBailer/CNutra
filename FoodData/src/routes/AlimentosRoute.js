@@ -7,6 +7,8 @@ const router = Router();
 
 router.get('/alimentos', (req, res) => alimentoController.getAll(req, res));
 router.get('/alimentos/:id', (req, res) => alimentoController.getById(req, res));
+router.get('/alimentos/nome/:nome', (req, res) => alimentoController.getByName(req, res));
+router.get('/alimentos/nome/:nome/grupo/:grupo', (req, res) => alimentoController.getByNameAndCategoria(req, res));
 router.post('/alimentos', (req, res) => alimentoController.create(req, res));
 router.post('/alimentos/many', (req, res) => alimentoController.createMany(req, res));
 router.put('/alimentos/:id', (req, res) => alimentoController.update(req, res));
