@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Nutricao.Core.Dtos;
 using Nutricao.Core.Interfaces;
+using Nutricao.Core.OtherObjects;
 using Nutricao.Core.Service.Api;
+using Nutricao.Models;
 
 namespace Nutricao.Core.Service
 {
@@ -12,7 +16,48 @@ namespace Nutricao.Core.Service
         {
             _apiService = apiService;
         }
-        public async Task<IActionResult> GetFoodNutrition(EFoodCategory foodCategory, string foodName)
+        public async Task<FoodServiceResponseSimplifiedDto> FoodDetailNameAndCategory(EFoodCategory foodCategory, string foodName)
+        {
+            try
+            {
+
+                var foodList = await _apiService.GetFoodByCategoryAndName(foodCategory, foodName);
+
+                if (foodList != null && foodList.Any())
+                {
+                    var result = foodList.Select(foodData => new FoodDetails
+                    {
+                        Nome = foodData.Nome,
+                        Grupo = foodData.Grupo,
+                    });
+                    return new FoodServiceResponseSimplifiedDto
+                    {
+                        Food = result,
+                        IsSuccess = true,
+                        Message = $"Informações sobre o {foodName} encontradas.",
+                        StatusCode = 200,
+                    };
+                }
+                else
+                {
+                    return new FoodServiceResponseSimplifiedDto
+                    {
+                        IsSuccess = false,
+                        Message = $"Informações sobre o {foodName} não encontradas.",
+                        StatusCode = 404,
+                    };
+                }
+            }catch(Exception ex)
+            {
+                return new FoodServiceResponseSimplifiedDto
+                {
+                    IsSuccess = false,
+                    Message = $"Erro ao buscar informações sobre o {foodName}.",
+                    StatusCode = 500,
+                };
+            }
+        }
+        public async Task<FoodServiceResponseDto> AllFoodDetails(EFoodCategory foodCategory, string foodName)
         {
             try
             {
@@ -20,35 +65,45 @@ namespace Nutricao.Core.Service
 
                 if (foodList != null && foodList.Any())
                 {
-                    var result = foodList.Select(foodData => new
+                    var result = foodList.Select(foodData => new Nutrients
                     {
-                        FoodName = foodData.Nome,
-                        Nutrients = new
-                        {
-                            Nome = foodData.Nome,
-                            Valor = foodData.Grupo,
-                            Carboidratos = foodData.Carboidratos,
-                            Proteinas = foodData.Proteinas,
-                            Lipidios = foodData.Lipidios,
-                            Calorias = foodData.Calorias,
-                            Vitaminas = foodData.Vitaminas,
-                            Minerais = foodData.Minerais
-                        }
+                        Nome = foodData.Nome,
+                        Grupo = foodData.Grupo,
+                        Calorias = foodData.Calorias,
+                        Proteinas = foodData.Proteinas,
+                        Lipidios = foodData.Lipidios,
+                        Carboidratos = foodData.Carboidratos,
+                        Vitaminas = foodData.Vitaminas,
+                        Minerais = foodData.Minerais,
                     });
-                    return new OkObjectResult(result);
+                    return new FoodServiceResponseDto
+                    {                      
+                        Food = result.FirstOrDefault(),
+                    };
                 }
                 else
                 {
-                    return new NotFoundObjectResult($"Informações sobre o {foodName} não encontradas");
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        Message = $"Informações sobre o {foodName} não encontradas.",
+                    };
                 }
-            }
-            catch (Exception ex)
+            }catch(Exception ex)
             {
-                return new ObjectResult($"Erro ao processar a solicitação: {ex.Message}")
+                return new FoodServiceResponseDto
                 {
-                    StatusCode = 500
+                    IsSuccess = false,
+                    Message = $"Erro ao buscar informações sobre o {foodName}.",
                 };
             }
+        }
+        //Responsável por procurar o nome e a categoria
+        public async Task<FoodServiceResponseSimplifiedDto> GetFoodName(EFoodCategory foodCategory, string foodName)
+        {
+            var result = await FoodDetailNameAndCategory(foodCategory, foodName);
+            
+            return result;
         }
     }
 }

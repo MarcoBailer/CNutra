@@ -1,4 +1,4 @@
-﻿namespace Nutricao.Models
+﻿namespace Nutricao.Core.OtherObjects
 {
     public class ApiResponse
     {

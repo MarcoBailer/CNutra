@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
-using FoodDataCentral.Models;
 using Newtonsoft.Json;
-using Nutricao.Models;
+using Nutricao.Core.OtherObjects;
 
 namespace Nutricao.Core.Service.Api
 {
