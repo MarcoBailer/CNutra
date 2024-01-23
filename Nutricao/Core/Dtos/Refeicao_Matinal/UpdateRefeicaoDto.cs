@@ -4,6 +4,7 @@ namespace Nutricao.Core.Dtos.Refeicao
 {
     public class UpdateRefeicaoDto
     {
+        public string Nome { get; set; }
         public double Carboidratos { get; set; }
         public double Proteinas { get; set; }
         public double Calorias { get; set; }

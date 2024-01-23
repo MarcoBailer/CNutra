@@ -98,12 +98,5 @@ namespace Nutricao.Core.Service
                 };
             }
         }
-        //Responsável por procurar o nome e a categoria
-        public async Task<FoodServiceResponseSimplifiedDto> GetFoodName(EFoodCategory foodCategory, string foodName)
-        {
-            var result = await FoodDetailNameAndCategory(foodCategory, foodName);
-            
-            return result;
-        }
     }
 }

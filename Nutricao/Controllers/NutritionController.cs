@@ -6,6 +6,9 @@ using Nutricao.Core.Interfaces;
 using Nutricao.Core.OtherObjects;
 using Nutricao.Models;
 using Newtonsoft.Json;
+using Nutricao.Core.Dtos.Refeicao_Vespertina;
+using Nutricao.Core.Dtos.Refeicao_Noturna;
+using Microsoft.EntityFrameworkCore;
 
 namespace Nutricao.Controllers
 {
@@ -15,102 +18,66 @@ namespace Nutricao.Controllers
     {
 
         private readonly IFoodInfomation _foodInformation;
+        private readonly IFoodCalc _foodCalc;
         private RefeicaoContext _context;
         private IMapper _mapper;
 
-        public NutritionController(IFoodInfomation foodInformation, RefeicaoContext context, IMapper mapper)
+        public NutritionController(IFoodInfomation foodInformation, RefeicaoContext context, IMapper mapper, IFoodCalc foodCalc)
         {
             _foodInformation = foodInformation;
             _context = context;
             _mapper = mapper;
+            _foodCalc = foodCalc;
         }
 
         [HttpPost("refeicaoMatinal")]
         public async Task<IActionResult> AdicionaRefeicaoMatinal([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName)
         {
-            try
-            {
-                var result = await _foodInformation.AllFoodDetails(foodCategory, foodName);
-
-                var refeicaoMatinal = new RefeicaoMatinal
-                {
-                    Dia = refeicao.Dia,
-                    Mes = refeicao.Mes,
-                    Ano = refeicao.Ano,
-                    Calorias = result.Food.Calorias,
-                    Carboidratos = result.Food.Carboidratos,
-                    Proteinas = result.Food.Proteinas
-                };
-
-                _context.RefeicaoMatinal.Add(refeicaoMatinal);
-                await _context.SaveChangesAsync();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+            var result = await _foodCalc.AdicionaRefeicaoMatinal(refeicao, foodCategory, foodName);       
+            return Ok(result);
         }
         [HttpPost("refeicaoVespertina")]
-        public async Task<IActionResult> AdicionaRefeicaoVespertina([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName)
+        public async Task<IActionResult> AdicionaRefeicaoVespertina([FromBody] CreateRefeicaoVespertinaDto refeicao, EFoodCategory foodCategory, string foodName)
         {
-            try
-            {
-                var result = await _foodInformation.AllFoodDetails(foodCategory, foodName);
-
-                var refeicaoVespertina = new RefeicaoVespertina
-                {
-                    Dia = refeicao.Dia,
-                    Mes = refeicao.Mes,
-                    Ano = refeicao.Ano,
-                    Calorias = result.Food.Calorias,
-                    Carboidratos = result.Food.Carboidratos,
-                    Proteinas = result.Food.Proteinas
-                };
-
-                _context.RefeicaoVespertina.Add(refeicaoVespertina);
-                await _context.SaveChangesAsync();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+            var result = await _foodCalc.AdicionaRefeicaoVespertina(refeicao, foodCategory, foodName);
+            return Ok(result);
         }
         [HttpPost("refeicaoNoturna")]
-        public async Task<IActionResult> AdicionaRefeicaoNoturna([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName)
+        public async Task<IActionResult> AdicionaRefeicaoNoturna([FromBody] CreateRefeicaoNoturnaDto refeicao, EFoodCategory foodCategory, string foodName)
         {
-            try
-            {
-                var result = await _foodInformation.AllFoodDetails(foodCategory, foodName);
+            var result = await _foodCalc.AdicionaRefeicaoNoturna(refeicao, foodCategory, foodName);
+            return Ok(result);
+        }
+        [HttpGet("refeicaoMatinal/{dia}/{mes}/{ano}")]
+        public async Task<List<RefeicaoMatinal>> GetRefeicaoMatinal(int dia, int mes, int ano)
+        {
+            var result = await _foodCalc.GetRefeicaoMatinal(dia, mes, ano);
+            return result;
+        }
+        [HttpGet("refeicaoVespertina/{dia}/{mes}/{ano}")]
+        public async Task<List<RefeicaoVespertina>> GetRefeicaoVespertina(int dia, int mes, int ano)
+        {
+            var result = await _foodCalc.GetRefeicaoVespertina(dia, mes, ano);
+            return result;
+        }
+        [HttpGet("refeicaoNoturna/{dia}/{mes}/{ano}")]
+        public async Task<List<RefeicaoNoturna>> GetRefeicaoNoturna(int dia, int mes, int ano)
+        {
+            var result = await _foodCalc.GetRefeicaoNoturna(dia, mes, ano);
+            return result;
+        }
 
-                var refeicaoNoturna = new RefeicaoNoturna
-                {
-                    Dia = refeicao.Dia,
-                    Mes = refeicao.Mes,
-                    Ano = refeicao.Ano,
-                    Calorias = result.Food.Calorias,
-                    Carboidratos = result.Food.Carboidratos,
-                    Proteinas = result.Food.Proteinas
-                };
-
-                _context.RefeicaoNoturna.Add(refeicaoNoturna);
-                await _context.SaveChangesAsync();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+        [HttpPost("CalcularNutrientesTotais")]
+        public async Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano)
+        {
+            var result = await _foodCalc.CalculoTotal(dia, mes, ano);
+            return result;
         }
 
         [HttpGet("foods/{foodName}")]
         public async Task<IActionResult> GetFoodNutrition(EFoodCategory foodCategory,string foodName)
         {
-            var result = await _foodInformation.GetFoodName(foodCategory, foodName);
+            var result = await _foodInformation.FoodDetailNameAndCategory(foodCategory, foodName);
 
             return Ok(result);
         }
@@ -118,7 +85,7 @@ namespace Nutricao.Controllers
         [HttpGet("food/frutas/{fruta}")]
         public async Task<IActionResult> GetFruit(string fruta)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.Frutas, fruta);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Frutas, fruta);
 
             return Ok(result);
         }
@@ -126,7 +93,7 @@ namespace Nutricao.Controllers
         [HttpGet("food/vegetais/{Vegetal}")]
         public async Task<IActionResult> GetVegetable(string Vegetal)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.Verduras, Vegetal);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Verduras, Vegetal);
 
             return Ok(result);
         }
@@ -134,7 +101,7 @@ namespace Nutricao.Controllers
         [HttpGet("food/carnes/{carne}")]
         public async Task<IActionResult> GetBeef(string carne)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.CarneEDerivados, carne);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.CarneEDerivados, carne);
 
             return Ok(result);
         }
@@ -142,7 +109,7 @@ namespace Nutricao.Controllers
         [HttpGet("food/OvosDerivados/{Ovo}")]
         public async Task<IActionResult> GetDairyEggs(string ovo)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.OvosEDerivados, ovo);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.OvosEDerivados, ovo);
 
             return Ok(result);
         }
@@ -150,7 +117,7 @@ namespace Nutricao.Controllers
         [HttpGet("food/bebidas/{Bebida}")]
         public async Task<IActionResult> GetBeverages(string Bebida)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.Bebidas, Bebida);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Bebidas, Bebida);
 
             return Ok(result);
         }
@@ -158,7 +125,7 @@ namespace Nutricao.Controllers
         [HttpGet("food/Cereais/{Cereal}")]
         public async Task<IActionResult> GetBreakFastCereals(string Cereal)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.Cereais, Cereal);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Cereais, Cereal);
 
             return Ok(result);
         }
@@ -166,7 +133,7 @@ namespace Nutricao.Controllers
         [HttpGet("food/OleosGorduras/{oleoGordura}")]
         public async Task<IActionResult> GetFatsOils(string oleoGordura)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.OleosEGorduras, oleoGordura);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.OleosEGorduras, oleoGordura);
 
             return Ok(result);
         }
@@ -174,7 +141,7 @@ namespace Nutricao.Controllers
         [HttpGet("food/Pescados/{Pescado}")]
         public async Task<IActionResult> GetFinfishShellfish(string Pescado)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.Pescados, Pescado);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Pescados, Pescado);
 
             return Ok(result);
         }
@@ -182,42 +149,42 @@ namespace Nutricao.Controllers
         [HttpGet("food/legumes/{legume}")]
         public async Task<IActionResult> GetLegumes(string legume)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.Leguminosas, legume);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Leguminosas, legume);
 
             return Ok(result);
         }
         [HttpGet("food/LeiteDerivados/{Leite}")]
         public async Task<IActionResult> GetMilk(string Leite)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.LeiteEDerivados, Leite);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.LeiteEDerivados, Leite);
 
             return Ok(result);
         }
         [HttpGet("food/Açucarados/{Açucarado}")]
         public async Task<IActionResult> GetSugar(string Açucarado)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.Açucarados, Açucarado);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Açucarados, Açucarado);
 
             return Ok(result);
         }
         [HttpGet("food/Micelanias/{Micelania}")]
         public async Task<IActionResult> GetMicelanias(string Micelania)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.Micelania, Micelania);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Micelania, Micelania);
 
             return Ok(result);
         }
         [HttpGet("food/OutroIndustrializados/{OutroIndustrializado}")]
         public async Task<IActionResult> GetOther(string OutroIndustrializado)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.OutrosIndustrializados, OutroIndustrializado);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.OutrosIndustrializados, OutroIndustrializado);
 
             return Ok(result);
         }
         [HttpGet("food/preparados/{AlimentoPreparado}")]
         public async Task<IActionResult> GetReady(string AlimentoPreparado)
         {
-            var result = await _foodInformation.GetFoodName(EFoodCategory.AlimentosPreparados, AlimentoPreparado);
+            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.AlimentosPreparados, AlimentoPreparado);
 
             return Ok(result);
         }
