@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nutricao.Core.Dtos.Context;
 
@@ -10,9 +11,11 @@ using Nutricao.Core.Dtos.Context;
 namespace Nutricao.Migrations
 {
     [DbContext(typeof(RefeicaoContext))]
-    partial class RefeicaoContextModelSnapshot : ModelSnapshot
+    [Migration("20240119164914_CalcRefeicao")]
+    partial class CalcRefeicao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,15 +31,6 @@ namespace Nutricao.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Ano")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Dia")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Mes")
-                        .HasColumnType("int");
 
                     b.Property<double>("TotalCalorias")
                         .HasColumnType("float");
