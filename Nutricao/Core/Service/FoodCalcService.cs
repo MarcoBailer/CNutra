@@ -161,25 +161,10 @@ namespace Nutricao.Core.Service
                 var vespertino = await GetRefeicaoVespertina(dia, mes, ano);
                 var noturno = await GetRefeicaoNoturna(dia, mes, ano);
 
-                var totalCarboidratosMatinal = matinal.Sum(x => x.Carboidratos);
-                var totalProteinasMatinal = matinal.Sum(x => x.Proteinas);
-                var totalGordurasMatinal = matinal.Sum(x => x.Lipidios);
-                var totalCaloriasMatinal = matinal.Sum(x => x.Calorias);
-
-                var totalCarboidratosVespertino = vespertino.Sum(x => x.Carboidratos);
-                var totalProteinasVespertino = vespertino.Sum(x => x.Proteinas);
-                var totalGordurasVespertino = vespertino.Sum(x => x.Lipidios);
-                var totalCaloriasVespertino = vespertino.Sum(x => x.Calorias);
-
-                var totalCarboidratosNoturno = noturno.Sum(x => x.Carboidratos);
-                var totalProteinasNoturno = noturno.Sum(x => x.Proteinas);
-                var totalGordurasNoturno = noturno.Sum(x => x.Lipidios);
-                var totalCaloriasNoturno = noturno.Sum(x => x.Calorias);
-
-                var totalCarboidratos = totalCarboidratosMatinal + totalCarboidratosVespertino + totalCarboidratosNoturno;
-                var totalProteinas = totalProteinasMatinal + totalProteinasVespertino + totalProteinasNoturno;
-                var totalGorduras = totalGordurasMatinal + totalGordurasVespertino + totalGordurasNoturno;
-                var totalCalorias = totalCaloriasMatinal + totalCaloriasVespertino + totalCaloriasNoturno;
+                var totalCarboidratos = CalculoDaRefeicao.CalcularTotalCarboidratos(matinal,vespertino,noturno);
+                var totalProteinas = CalculoDaRefeicao.CalcularTotalProteinas(matinal,vespertino,noturno);
+                var totalGorduras = CalculoDaRefeicao.CalcularTotalGorduras(matinal,vespertino,noturno);
+                var totalCalorias = CalculoDaRefeicao.CalcularTotalCalorias(matinal,vespertino,noturno);
 
                 var total = new CalculoDaRefeicao
                 {

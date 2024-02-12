@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Nutricao.Core.Dtos.Refeicao_Vespertina;
 using Nutricao.Core.Dtos.Refeicao_Noturna;
 using Microsoft.EntityFrameworkCore;
+using Nutricao.Core.Dtos;
 
 namespace Nutricao.Controllers
 {
@@ -67,10 +68,16 @@ namespace Nutricao.Controllers
             return result;
         }
 
-        [HttpPost("CalcularNutrientesTotais")]
+        [HttpPost("CalcularNutrientesTotaisDiaria")]
         public async Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano)
         {
             var result = await _foodCalc.CalculoTotal(dia, mes, ano);
+            return result;
+        }
+        [HttpGet("Alimentos/{nomes}")]
+        public async Task<List<FoodServiceResponseDto>> GetFoods(string nomes)
+        {
+            var result = await _foodInformation.BuscarInformaçõesPorNomes(nomes);
             return result;
         }
 

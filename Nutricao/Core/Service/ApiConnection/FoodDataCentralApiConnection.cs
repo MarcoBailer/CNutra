@@ -49,5 +49,34 @@ namespace Nutricao.Core.Service.Api
 
             return null;
         }
+        public async Task<List<Nutrients>> GetFoodByName(string foodName)
+        {
+            try
+            {
+                var apiUrl = $"http://localhost:3000/alimentos/nome/{foodName}";
+
+                var response = await _httpClient.GetAsync(apiUrl);
+
+                if(response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    var result = JsonConvert.DeserializeObject<List<Nutrients>>(content);
+
+                    if(result != null)
+                    {
+                        return result;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Error: {response.ReasonPhrase}");
+                }
+            }catch(Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+            return null;
+        }
     }
 }

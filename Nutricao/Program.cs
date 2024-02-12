@@ -31,6 +31,7 @@ builder.Services.AddSingleton<FoodDataCentralApiConnection>(provider =>
 
 // Inject app Dependencies (Dependency Injection)
 builder.Services.AddScoped<IFoodInfomation, FoodInformationService>();
+builder.Services.AddScoped<IFoodCalc, FoodCalcService>();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Newtonsoft.Json;
 using Nutricao.Core.Dtos;
 using Nutricao.Core.Interfaces;
@@ -97,6 +98,59 @@ namespace Nutricao.Core.Service
                     Message = $"Erro ao buscar informações sobre o {foodName}.",
                 };
             }
+        }
+        public async Task<FoodServiceResponseDto> FoodDetailSearchByName(string foodName)
+        {
+            try
+            {
+                var foodList = await _apiService.GetFoodByName(foodName);
+
+                if (foodList != null && foodList.Any())
+                {
+                    var result = foodList.Select(foodData => new Nutrients
+                    {
+                        Nome = foodData.Nome,
+                        Grupo = foodData.Grupo,
+                        Calorias = foodData.Calorias,
+                        Proteinas = foodData.Proteinas,
+                        Lipidios = foodData.Lipidios,
+                        Carboidratos = foodData.Carboidratos,
+                        Vitaminas = foodData.Vitaminas,
+                        Minerais = foodData.Minerais,
+                    });
+                    return new FoodServiceResponseDto
+                    {
+                        Food = result.FirstOrDefault(),
+                    };
+                }
+                else
+                {
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        Message = $"Informações sobre o {foodName} não encontradas.",
+                    };
+                }
+            }catch(Exception ex)
+            {
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = false,
+                    Message = $"Erro ao buscar informações sobre o {foodName}.",
+                };
+            }
+        }
+        public async Task<List<FoodServiceResponseDto>> BuscarInformaçõesPorNomes(string nomes)
+        {
+            List<FoodServiceResponseDto> informacoes = new List<FoodServiceResponseDto>();
+            string[] nomesSeperados = nomes.Split(';');
+
+            foreach(var nome in nomesSeperados)
+            {
+                var informacao = await FoodDetailSearchByName(nome);
+                informacoes.Add(informacao);
+            }
+            return informacoes;
         }
     }
 }
