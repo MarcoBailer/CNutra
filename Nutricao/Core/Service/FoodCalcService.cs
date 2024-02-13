@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Nutricao.Core.Dtos;
 using Nutricao.Core.Dtos.Context;
 using Nutricao.Core.Dtos.Refeicao;
-using Nutricao.Core.Dtos.Refeicao_Noturna;
-using Nutricao.Core.Dtos.Refeicao_Vespertina;
 using Nutricao.Core.Interfaces;
 using Nutricao.Models;
 
@@ -21,32 +19,68 @@ namespace Nutricao.Core.Service
             _foodInformation = foodInformation;
         }
 
-        public async Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicaoMatinal([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName)
+        public async Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicao([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName)
         {
             try
             {
                 var result = await _foodInformation.AllFoodDetails(foodCategory, foodName);
 
-                var refeicaoMatinal = new RefeicaoMatinal
+                var refeicaoMatinal = new RefeicaoMVN
                 {
                     Nome = result.Food.Nome,
-                    Dia = refeicao.Dia,
-                    Mes = refeicao.Mes,
-                    Ano = refeicao.Ano,
                     Calorias = result.Food.Calorias,
                     Carboidratos = result.Food.Carboidratos,
                     Proteinas = result.Food.Proteinas,
-                    Lipidios = result.Food.Lipidios
+                    Lipidios = result.Food.Lipidios,
+                    IsMatinal = refeicao.IsMatinal,
+                    IsVespertina = refeicao.IsVespertina,
+                    IsNoturna = refeicao.IsNoturna,
+                    Dia = refeicao.Dia,
+                    Mes = refeicao.Mes,
+                    Ano = refeicao.Ano,
                 };
-
-                _context.RefeicaoMatinal.Add(refeicaoMatinal);
-                await _context.SaveChangesAsync();
-                return new FoodServiceResponseSimplifiedDto
+                if(refeicaoMatinal.IsMatinal == true)
                 {
-                    StatusCode = 200,
-                    IsSuccess = true,
-                    Message = $"Refeição matinal adicionada com sucesso."
-                };
+                    _context.RefeicaoMVN.Add(refeicaoMatinal);
+                    await _context.SaveChangesAsync();
+                    return new FoodServiceResponseSimplifiedDto
+                    {
+                        StatusCode = 200,
+                        IsSuccess = true,
+                        Message = $"Refeição matinal adicionada com sucesso."
+                    };
+                }
+                else if(refeicaoMatinal.IsVespertina == true)
+                {
+                    _context.RefeicaoMVN.Add(refeicaoMatinal);
+                    await _context.SaveChangesAsync();
+                    return new FoodServiceResponseSimplifiedDto
+                    {
+                        StatusCode = 200,
+                        IsSuccess = true,
+                        Message = $"Refeição vespertina adicionada com sucesso."
+                    };
+                }
+                else if(refeicaoMatinal.IsNoturna == true)
+                {
+                    _context.RefeicaoMVN.Add(refeicaoMatinal);
+                    await _context.SaveChangesAsync();
+                    return new FoodServiceResponseSimplifiedDto
+                    {
+                        StatusCode = 200,
+                        IsSuccess = true,
+                        Message = $"Refeição noturna adicionada com sucesso."
+                    };
+                }
+                else
+                {
+                    return new FoodServiceResponseSimplifiedDto
+                    {
+                        StatusCode = 500,
+                        IsSuccess = false,
+                        Message = $"Erro ao adicionar refeição."
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -54,101 +88,27 @@ namespace Nutricao.Core.Service
                 {
                     StatusCode = 500,
                     IsSuccess = false,
-                    Message = $"Erro ao adicionar refeição matinal."
+                    Message = $"Erro ao adicionar refeição."
                 };
             }
         }
-        public async Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicaoVespertina([FromBody] CreateRefeicaoVespertinaDto refeicao, EFoodCategory foodCategory, string foodName)
+        public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal(int dia, int mes, int ano)
         {
-            try
-            {
-                var result = await _foodInformation.AllFoodDetails(foodCategory, foodName);
-
-                var refeicaoVespertina = new RefeicaoVespertina
-                {
-                    Nome = result.Food.Nome,
-                    Dia = refeicao.Dia,
-                    Mes = refeicao.Mes,
-                    Ano = refeicao.Ano,
-                    Calorias = result.Food.Calorias,
-                    Carboidratos = result.Food.Carboidratos,
-                    Proteinas = result.Food.Proteinas,
-                    Lipidios = result.Food.Lipidios
-                };
-
-                _context.RefeicaoVespertina.Add(refeicaoVespertina);
-                await _context.SaveChangesAsync();
-                return new FoodServiceResponseSimplifiedDto
-                {
-                    StatusCode = 200,
-                    IsSuccess = true,
-                    Message = $"Refeição vespertina adicionada com sucesso."
-                };
-            }
-            catch (Exception ex)
-            {
-                return new FoodServiceResponseSimplifiedDto
-                {
-                    StatusCode = 500,
-                    IsSuccess = false,
-                    Message = $"Erro ao adicionar refeição vespertina."
-                };
-            }
-        }
-        public async Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicaoNoturna([FromBody] CreateRefeicaoNoturnaDto refeicao, EFoodCategory foodCategory, string foodName)
-        {
-            try
-            {
-                var result = await _foodInformation.AllFoodDetails(foodCategory, foodName);
-
-                var refeicaoNoturna = new RefeicaoNoturna
-                {
-                    Nome = result.Food.Nome,
-                    Dia = refeicao.Dia,
-                    Mes = refeicao.Mes,
-                    Ano = refeicao.Ano,
-                    Calorias = result.Food.Calorias,
-                    Carboidratos = result.Food.Carboidratos,
-                    Proteinas = result.Food.Proteinas,
-                    Lipidios = result.Food.Lipidios
-                };
-
-                _context.RefeicaoNoturna.Add(refeicaoNoturna);
-                await _context.SaveChangesAsync();
-                return new FoodServiceResponseSimplifiedDto
-                {
-                    StatusCode = 200,
-                    IsSuccess = true,
-                    Message = $"Refeição noturna adicionada com sucesso."
-                };
-            }
-            catch (Exception ex)
-            {
-                return new FoodServiceResponseSimplifiedDto 
-                { 
-                    StatusCode = 500, 
-                    IsSuccess = false, 
-                    Message = $"Erro ao adicionar refeição vespertina." 
-                };
-            }
-        }
-        public async Task<List<RefeicaoMatinal>> GetRefeicaoMatinal(int dia, int mes, int ano)
-        {
-            var result = await _context.RefeicaoMatinal.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano)
+            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsMatinal == true)
             .ToListAsync();
 
             return result;
         }
-        public async Task<List<RefeicaoVespertina>> GetRefeicaoVespertina(int dia, int mes, int ano)
+        public async Task<List<RefeicaoMVN>> GetRefeicaoVespertina(int dia, int mes, int ano)
         {
-            var result = await _context.RefeicaoVespertina.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano)
+            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsVespertina == true)
             .ToListAsync();
 
             return result;
         }
-        public async Task<List<RefeicaoNoturna>> GetRefeicaoNoturna(int dia, int mes, int ano)
+        public async Task<List<RefeicaoMVN>> GetRefeicaoNoturna(int dia, int mes, int ano)
         {
-            var result = await _context.RefeicaoNoturna.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano)
+            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsNoturna == true)
             .ToListAsync();
 
             return result;
