@@ -6,8 +6,6 @@ using Nutricao.Core.Interfaces;
 using Nutricao.Core.OtherObjects;
 using Nutricao.Models;
 using Newtonsoft.Json;
-using Nutricao.Core.Dtos.Refeicao_Vespertina;
-using Nutricao.Core.Dtos.Refeicao_Noturna;
 using Microsoft.EntityFrameworkCore;
 using Nutricao.Core.Dtos;
 
@@ -15,70 +13,14 @@ namespace Nutricao.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class NutritionController : Controller
+    public class BuscaController : Controller
     {
 
         private readonly IFoodInfomation _foodInformation;
-        private readonly IFoodCalc _foodCalc;
-        private RefeicaoContext _context;
-        private IMapper _mapper;
 
-        public NutritionController(IFoodInfomation foodInformation, RefeicaoContext context, IMapper mapper, IFoodCalc foodCalc)
+        public BuscaController(IFoodInfomation foodInformation)
         {
             _foodInformation = foodInformation;
-            _context = context;
-            _mapper = mapper;
-            _foodCalc = foodCalc;
-        }
-
-        [HttpPost("refeicaoMatinal")]
-        public async Task<IActionResult> AdicionaRefeicaoMatinal([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName)
-        {
-            var result = await _foodCalc.AdicionaRefeicaoMatinal(refeicao, foodCategory, foodName);       
-            return Ok(result);
-        }
-        [HttpPost("refeicaoVespertina")]
-        public async Task<IActionResult> AdicionaRefeicaoVespertina([FromBody] CreateRefeicaoVespertinaDto refeicao, EFoodCategory foodCategory, string foodName)
-        {
-            var result = await _foodCalc.AdicionaRefeicaoVespertina(refeicao, foodCategory, foodName);
-            return Ok(result);
-        }
-        [HttpPost("refeicaoNoturna")]
-        public async Task<IActionResult> AdicionaRefeicaoNoturna([FromBody] CreateRefeicaoNoturnaDto refeicao, EFoodCategory foodCategory, string foodName)
-        {
-            var result = await _foodCalc.AdicionaRefeicaoNoturna(refeicao, foodCategory, foodName);
-            return Ok(result);
-        }
-        [HttpGet("refeicaoMatinal/{dia}/{mes}/{ano}")]
-        public async Task<List<RefeicaoMatinal>> GetRefeicaoMatinal(int dia, int mes, int ano)
-        {
-            var result = await _foodCalc.GetRefeicaoMatinal(dia, mes, ano);
-            return result;
-        }
-        [HttpGet("refeicaoVespertina/{dia}/{mes}/{ano}")]
-        public async Task<List<RefeicaoVespertina>> GetRefeicaoVespertina(int dia, int mes, int ano)
-        {
-            var result = await _foodCalc.GetRefeicaoVespertina(dia, mes, ano);
-            return result;
-        }
-        [HttpGet("refeicaoNoturna/{dia}/{mes}/{ano}")]
-        public async Task<List<RefeicaoNoturna>> GetRefeicaoNoturna(int dia, int mes, int ano)
-        {
-            var result = await _foodCalc.GetRefeicaoNoturna(dia, mes, ano);
-            return result;
-        }
-
-        [HttpPost("CalcularNutrientesTotaisDiaria")]
-        public async Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano)
-        {
-            var result = await _foodCalc.CalculoTotal(dia, mes, ano);
-            return result;
-        }
-        [HttpGet("Alimentos/{nomes}")]
-        public async Task<List<FoodServiceResponseDto>> GetFoods(string nomes)
-        {
-            var result = await _foodInformation.BuscarInformaçõesPorNomes(nomes);
-            return result;
         }
 
         [HttpGet("foods/{foodName}")]

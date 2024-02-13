@@ -9,9 +9,7 @@ namespace Nutricao.Core.Dtos.Context
         {
         }
 
-        public DbSet<RefeicaoMatinal> RefeicaoMatinal { get; set; }
-        public DbSet<RefeicaoVespertina> RefeicaoVespertina { get; set; }
-        public DbSet<RefeicaoNoturna> RefeicaoNoturna { get; set; }
+        public DbSet<RefeicaoMVN> RefeicaoMVN { get; set; }
         public DbSet<CalculoDaRefeicao> Refeicao { get; set; }
     }
 }
