@@ -58,22 +58,18 @@ class Service {
 
         }
     }
-    async getByNomeAndCategoriaService(nome, grupo){
+    async getAllFromCategoryService(grupo){
         try{
             const entity = await database[this.model].findAll({
                 where: {
-                    nome:{
-                        [Op.like]: `%${nome}%`
-                    },
                     grupo:{
-                        [Op.like]: `%${grupo}%`  
-                    } 
+                        [Op.like]: `%${grupo}%`
+                    }
                 }
             })
             return entity;
         }catch(error){
             throw error;
-
         }
     }
     async createService(entity){
