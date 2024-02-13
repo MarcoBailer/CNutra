@@ -8,5 +8,7 @@ namespace Nutricao.Core.Interfaces
     {
         Task<FoodServiceResponseSimplifiedDto> FoodDetailNameAndCategory(EFoodCategory foodCategory, string foodName);
         Task<FoodServiceResponseDto> AllFoodDetails(EFoodCategory foodCategory, string foodName);
+        Task<FoodServiceResponseDto> FoodDetailSearchByName(string foodName);
+        Task<List<FoodServiceResponseDto>> BuscarInformaçõesPorNomes(string nomes);
     }
 }

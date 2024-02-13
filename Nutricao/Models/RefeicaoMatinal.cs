@@ -16,5 +16,22 @@ namespace Nutricao.Models
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
+
+        public static double CalcularTotalCarboidratosMatinal(List<RefeicaoMatinal> refeicaoMatinal)
+        {
+            return refeicaoMatinal.Sum(r => r.Carboidratos);
+        }
+        public static double CalcularTotalProteinasMatinal(List<RefeicaoMatinal> refeicaoMatinal)
+        {
+            return refeicaoMatinal.Sum(r => r.Proteinas);
+        }
+        public static double CalcularTotalCaloriasMatinal(List<RefeicaoMatinal> refeicaoMatinal)
+        {
+            return refeicaoMatinal.Sum(r => r.Calorias);
+        }
+        public static double CalcularTotalLipidiosMatinal(List<RefeicaoMatinal> refeicaoMatinal)
+        {
+            return refeicaoMatinal.Sum(r => r.Lipidios);
+        }
     }
 }
