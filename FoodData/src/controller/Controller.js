@@ -28,10 +28,10 @@ class Controller {
             return res.status(500).json(error.message);
         }
     }
-    async getByNameAndCategoria(req,res){
-        const { nome, grupo } = req.params;
+    async getAllFromCategory(req,res){
+        const { grupo } = req.params;
         try{
-            const entity = await this.entityService.getByNomeAndCategoriaService(nome, grupo);
+            const entity = await this.entityService.getAllFromCategoryService(grupo);
             return res.status(200).json({Alimentos: entity});
         }catch(error){
             return res.status(500).json(error.message);
