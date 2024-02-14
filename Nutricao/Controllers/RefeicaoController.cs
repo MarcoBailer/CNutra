@@ -19,9 +19,9 @@ namespace Nutricao.Controllers
         }
 
         [HttpPost("refeicaoM/V/N")]
-        public async Task<IActionResult> AdicionaRefeicaoMVN([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName)
+        public async Task<IActionResult> AdicionaRefeicaoMVN([FromBody] CreateRefeicaoDto refeicao, string foodName)
         {
-            var result = await _foodCalc.AdicionaRefeicao(refeicao, foodCategory, foodName);
+            var result = await _foodCalc.AdicionaRefeicao(refeicao, foodName);
             return Ok(result);
         }
         [HttpGet("refeicaoMatinal/{dia}/{mes}/{ano}")]

@@ -19,11 +19,11 @@ namespace Nutricao.Core.Service
             _foodInformation = foodInformation;
         }
 
-        public async Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicao([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName)
+        public async Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicao([FromBody] CreateRefeicaoDto refeicao, string foodName)
         {
             try
             {
-                var result = await _foodInformation.AllFoodDetails(foodCategory, foodName);
+                var result = await _foodInformation.FoodDetailSearchByName(foodName);
 
                 var refeicaoMatinal = new RefeicaoMVN
                 {

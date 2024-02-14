@@ -23,117 +23,109 @@ namespace Nutricao.Controllers
             _foodInformation = foodInformation;
         }
 
-        [HttpGet("foods/{foodName}")]
-        public async Task<IActionResult> GetFoodNutrition(EFoodCategory foodCategory,string foodName)
+        [HttpGet("food/frutas")]
+        public async Task<IActionResult> GetFruit()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(foodCategory, foodName);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.Frutas);
 
             return Ok(result);
         }
 
-        [HttpGet("food/frutas/{fruta}")]
-        public async Task<IActionResult> GetFruit(string fruta)
+        [HttpGet("food/vegetais")]
+        public async Task<IActionResult> GetVegetable()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Frutas, fruta);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.Verduras);
 
             return Ok(result);
         }
 
-        [HttpGet("food/vegetais/{Vegetal}")]
-        public async Task<IActionResult> GetVegetable(string Vegetal)
+        [HttpGet("food/carnes")]
+        public async Task<IActionResult> GetBeef()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Verduras, Vegetal);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.CarneEDerivados);
 
             return Ok(result);
         }
 
-        [HttpGet("food/carnes/{carne}")]
-        public async Task<IActionResult> GetBeef(string carne)
-        {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.CarneEDerivados, carne);
-
-            return Ok(result);
-        }
-
-        [HttpGet("food/OvosDerivados/{Ovo}")]
+        [HttpGet("food/OvosDerivados")]
         public async Task<IActionResult> GetDairyEggs(string ovo)
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.OvosEDerivados, ovo);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.OvosEDerivados);
 
             return Ok(result);
         }
 
-        [HttpGet("food/bebidas/{Bebida}")]
-        public async Task<IActionResult> GetBeverages(string Bebida)
+        [HttpGet("food/bebidas")]
+        public async Task<IActionResult> GetBeverages()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Bebidas, Bebida);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.Bebidas);
 
             return Ok(result);
         }
 
-        [HttpGet("food/Cereais/{Cereal}")]
-        public async Task<IActionResult> GetBreakFastCereals(string Cereal)
+        [HttpGet("food/Cereais")]
+        public async Task<IActionResult> GetBreakFastCereals()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Cereais, Cereal);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.Cereais);
 
             return Ok(result);
         }
 
-        [HttpGet("food/OleosGorduras/{oleoGordura}")]
-        public async Task<IActionResult> GetFatsOils(string oleoGordura)
+        [HttpGet("food/OleosGorduras")]
+        public async Task<IActionResult> GetFatsOils()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.OleosEGorduras, oleoGordura);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.OleosEGorduras);
 
             return Ok(result);
         }
 
-        [HttpGet("food/Pescados/{Pescado}")]
-        public async Task<IActionResult> GetFinfishShellfish(string Pescado)
+        [HttpGet("food/Pescados")]
+        public async Task<IActionResult> GetFinfishShellfish()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Pescados, Pescado);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.Pescados);
 
             return Ok(result);
         }
 
-        [HttpGet("food/legumes/{legume}")]
-        public async Task<IActionResult> GetLegumes(string legume)
+        [HttpGet("food/legumes")]
+        public async Task<IActionResult> GetLegumes()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Leguminosas, legume);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.Leguminosas);
 
             return Ok(result);
         }
-        [HttpGet("food/LeiteDerivados/{Leite}")]
-        public async Task<IActionResult> GetMilk(string Leite)
+        [HttpGet("food/LeiteDerivados")]
+        public async Task<IActionResult> GetMilk()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.LeiteEDerivados, Leite);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.LeiteEDerivados);
 
             return Ok(result);
         }
-        [HttpGet("food/Açucarados/{Açucarado}")]
-        public async Task<IActionResult> GetSugar(string Açucarado)
+        [HttpGet("food/Açucarados")]
+        public async Task<IActionResult> GetSugar()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Açucarados, Açucarado);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.Açucarados);
 
             return Ok(result);
         }
-        [HttpGet("food/Micelanias/{Micelania}")]
-        public async Task<IActionResult> GetMicelanias(string Micelania)
+        [HttpGet("food/Micelanias")]
+        public async Task<IActionResult> GetMicelanias()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.Micelania, Micelania);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.Micelania);
 
             return Ok(result);
         }
-        [HttpGet("food/OutroIndustrializados/{OutroIndustrializado}")]
-        public async Task<IActionResult> GetOther(string OutroIndustrializado)
+        [HttpGet("food/OutroIndustrializados")]
+        public async Task<IActionResult> GetOther()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.OutrosIndustrializados, OutroIndustrializado);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.OutrosIndustrializados);
 
             return Ok(result);
         }
-        [HttpGet("food/preparados/{AlimentoPreparado}")]
-        public async Task<IActionResult> GetReady(string AlimentoPreparado)
+        [HttpGet("food/preparados")]
+        public async Task<IActionResult> GetReady()
         {
-            var result = await _foodInformation.FoodDetailNameAndCategory(EFoodCategory.AlimentosPreparados, AlimentoPreparado);
+            var result = await _foodInformation.GetAllFoodFromACategory(EFoodCategory.AlimentosPreparados);
 
             return Ok(result);
         }
