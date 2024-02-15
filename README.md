@@ -25,6 +25,10 @@ Estou trabalhando arduamente para adicionar mais recursos, incluindo:
 - .NET Core
 - JavaScript
 
+## API
+
+- FoodData API
+
 ## Agradecimentos 🙌
 
 Obrigado por contribuir para tornar o CNutra um recurso valioso para cuidar da saúde e bem-estar! Seja parte dessa jornada nutritiva comigo! 🌱
