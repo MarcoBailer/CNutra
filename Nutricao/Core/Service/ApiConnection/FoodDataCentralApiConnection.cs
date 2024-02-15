@@ -14,17 +14,15 @@ namespace Nutricao.Core.Service.Api
             _httpClient = new HttpClient();
             _apiKey = apiKey;
         }
-        public async Task<List<Nutrients>> GetFoodByCategoryAndName(EFoodCategory foodCategory, string foodName)
+        public async Task<List<Nutrients>> GetAllFoodsFromACategory(EFoodCategory foodCategory)
         {
             try
             {
                 var categoryString = EnumExtensions.GetDescription(foodCategory);
 
-                var apiUrl = $"http://localhost:3000/alimentos/nome/{foodName}/grupo/{categoryString}";
+                var apiUrl = $"http://localhost:3000/alimentos/grupo/{categoryString}";
 
                 var response = await _httpClient.GetAsync(apiUrl);
-
-                Console.WriteLine($"Request URL: {apiUrl}");
 
                 if (response.IsSuccessStatusCode)
                 {

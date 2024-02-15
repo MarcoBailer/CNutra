@@ -7,7 +7,7 @@ namespace Nutricao.Core.Interfaces
 {
     public interface IFoodCalc 
     {
-        Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicao([FromBody] CreateRefeicaoDto refeicao, EFoodCategory foodCategory, string foodName);
+        Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicao([FromBody] CreateRefeicaoDto refeicao, string foodName);
         Task<List<RefeicaoMVN>> GetRefeicaoMatinal(int dia, int mes, int ano);
         Task<List<RefeicaoMVN>> GetRefeicaoVespertina(int dia, int mes, int ano);
         Task<List<RefeicaoMVN>> GetRefeicaoNoturna(int dia, int mes, int ano);
