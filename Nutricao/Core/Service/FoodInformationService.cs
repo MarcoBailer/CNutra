@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Newtonsoft.Json;
 using Nutricao.Core.Dtos;
+using Nutricao.Core.Dtos.Context;
+using Nutricao.Core.Dtos.Refeicao;
 using Nutricao.Core.Interfaces;
 using Nutricao.Core.OtherObjects;
 using Nutricao.Core.Service.Api;
@@ -12,10 +14,12 @@ namespace Nutricao.Core.Service
     public class FoodInformationService : IFoodInfomation
     {
         private readonly FoodDataCentralApiConnection _apiService;
+        private readonly RefeicaoContext _context;
 
-        public FoodInformationService(FoodDataCentralApiConnection apiService)
+        public FoodInformationService(FoodDataCentralApiConnection apiService, RefeicaoContext context)
         {
             _apiService = apiService;
+            _context = context;
         }
         public async Task<FoodServiceResponseSimplifiedDto> GetAllFoodFromACategory(EFoodCategory foodCategory)
         {
@@ -32,6 +36,9 @@ namespace Nutricao.Core.Service
                     });
                     return new FoodServiceResponseSimplifiedDto
                     {
+                        IsSuccess = true,
+                        StatusCode = 200,
+                        Message = "Informações encontradas.",
                         Food = result,
                     };
                 }
@@ -49,7 +56,7 @@ namespace Nutricao.Core.Service
                 return new FoodServiceResponseSimplifiedDto
                 {
                     IsSuccess = false,
-                    Message = $"Erro ao buscar informações sobre a categoria {foodCategory}.",
+                    Message = $"Erro ao buscar informações sobre a categoria: {ex}.",
                 };
             }
         }
@@ -74,6 +81,7 @@ namespace Nutricao.Core.Service
                     });
                     return new FoodServiceResponseDto
                     {
+                        IsSuccess = true,
                         Food = result.FirstOrDefault(),
                     };
                 }
@@ -90,21 +98,9 @@ namespace Nutricao.Core.Service
                 return new FoodServiceResponseDto
                 {
                     IsSuccess = false,
-                    Message = $"Erro ao buscar informações sobre o {foodName}.",
+                    Message = $"Erro ao buscar informações: {ex}.",
                 };
             }
-        }
-        public async Task<List<FoodServiceResponseDto>> BuscarInformaçõesPorNomes(string nomes)
-        {
-            List<FoodServiceResponseDto> informacoes = new List<FoodServiceResponseDto>();
-            string[] nomesSeperados = nomes.Split(';');
-
-            foreach(var nome in nomesSeperados)
-            {
-                var informacao = await FoodDetailSearchByName(nome);
-                informacoes.Add(informacao);
-            }
-            return informacoes;
         }
     }
 }

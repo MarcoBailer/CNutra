@@ -12,5 +12,7 @@ namespace Nutricao.Core.Interfaces
         Task<List<RefeicaoMVN>> GetRefeicaoVespertina(int dia, int mes, int ano);
         Task<List<RefeicaoMVN>> GetRefeicaoNoturna(int dia, int mes, int ano);
         Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano);
+        Task<List<FoodServiceResponseDto>> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicao, string nomes);
+
     }
 }

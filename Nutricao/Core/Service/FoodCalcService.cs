@@ -25,7 +25,7 @@ namespace Nutricao.Core.Service
             {
                 var result = await _foodInformation.FoodDetailSearchByName(foodName);
 
-                var refeicaoMatinal = new RefeicaoMVN
+                var refe = new RefeicaoMVN
                 {
                     Nome = result.Food.Nome,
                     Calorias = result.Food.Calorias,
@@ -39,9 +39,9 @@ namespace Nutricao.Core.Service
                     Mes = refeicao.Mes,
                     Ano = refeicao.Ano,
                 };
-                if(refeicaoMatinal.IsMatinal == true)
+                if(refe.IsMatinal == true)
                 {
-                    _context.RefeicaoMVN.Add(refeicaoMatinal);
+                    _context.RefeicaoMVN.Add(refe);
                     await _context.SaveChangesAsync();
                     return new FoodServiceResponseSimplifiedDto
                     {
@@ -50,9 +50,9 @@ namespace Nutricao.Core.Service
                         Message = $"Refeição matinal adicionada com sucesso."
                     };
                 }
-                else if(refeicaoMatinal.IsVespertina == true)
+                else if(refe.IsVespertina == true)
                 {
-                    _context.RefeicaoMVN.Add(refeicaoMatinal);
+                    _context.RefeicaoMVN.Add(refe);
                     await _context.SaveChangesAsync();
                     return new FoodServiceResponseSimplifiedDto
                     {
@@ -61,9 +61,9 @@ namespace Nutricao.Core.Service
                         Message = $"Refeição vespertina adicionada com sucesso."
                     };
                 }
-                else if(refeicaoMatinal.IsNoturna == true)
+                else if(refe.IsNoturna == true)
                 {
-                    _context.RefeicaoMVN.Add(refeicaoMatinal);
+                    _context.RefeicaoMVN.Add(refe);
                     await _context.SaveChangesAsync();
                     return new FoodServiceResponseSimplifiedDto
                     {
@@ -88,9 +88,63 @@ namespace Nutricao.Core.Service
                 {
                     StatusCode = 500,
                     IsSuccess = false,
-                    Message = $"Erro ao adicionar refeição."
+                    Message = $"Erro ao adicionar refeição: {ex}."
                 };
             }
+        }
+        public async Task<List<FoodServiceResponseDto>> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicaoDto, string nomes)
+        {
+            List<FoodServiceResponseDto> informacoes = new List<FoodServiceResponseDto>();
+            string[] nomesSeperados = nomes.Split(';');
+
+            foreach (var nome in nomesSeperados)
+            {
+                try
+                {
+                    var informacao = await _foodInformation.FoodDetailSearchByName(nome);
+                    var refeicao = new RefeicaoMVN
+                    {
+                        Nome = informacao.Food.Nome,
+                        Carboidratos = informacao.Food.Carboidratos,
+                        Proteinas = informacao.Food.Proteinas,
+                        Lipidios = informacao.Food.Lipidios,
+                        Calorias = informacao.Food.Calorias,
+                        Dia = refeicaoDto.Dia,
+                        Mes = refeicaoDto.Mes,
+                        Ano = refeicaoDto.Ano,
+                        IsMatinal = refeicaoDto.IsMatinal,
+                        IsVespertina = refeicaoDto.IsVespertina,
+                        IsNoturna = refeicaoDto.IsNoturna,
+                    };
+                    if (refeicao.IsMatinal == true)
+                    {
+                        _context.RefeicaoMVN.Add(refeicao);
+                        await _context.SaveChangesAsync();
+                        informacoes.Add(informacao);
+                    }
+                    else if (refeicao.IsVespertina == true)
+                    {
+                        _context.RefeicaoMVN.Add(refeicao);
+                        await _context.SaveChangesAsync();
+                        informacoes.Add(informacao);
+                    }
+                    else if (refeicao.IsNoturna == true)
+                    {
+                        _context.RefeicaoMVN.Add(refeicao);
+                        await _context.SaveChangesAsync();
+                        informacoes.Add(informacao);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    informacoes.Add(new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        Message = $"Nao foi possivel realizar operacao: {ex}",
+                    });
+                }
+            }
+            return informacoes;
         }
         public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal(int dia, int mes, int ano)
         {
