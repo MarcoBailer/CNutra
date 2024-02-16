@@ -27,7 +27,7 @@ Estou trabalhando arduamente para adicionar mais recursos, incluindo:
 
 ## API
 
-- FoodData API
+- FoodData API (https://github.com/MarcoBailer/FoodData-Api)
 
 ## Agradecimentos 🙌
 
