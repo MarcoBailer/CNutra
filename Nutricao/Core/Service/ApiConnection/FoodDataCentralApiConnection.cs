@@ -27,6 +27,7 @@ namespace Nutricao.Core.Service.Api
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(content);
 
                     var result = JsonConvert.DeserializeObject<ApiResponse>(content);
 

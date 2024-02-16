@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Nutricao.Core.Dtos;
+using Nutricao.Core.Dtos.Refeicao;
 using Nutricao.Models;
 
 namespace Nutricao.Core.Interfaces
@@ -8,6 +9,5 @@ namespace Nutricao.Core.Interfaces
     {
         Task<FoodServiceResponseSimplifiedDto> GetAllFoodFromACategory(EFoodCategory foodCategory);
         Task<FoodServiceResponseDto> FoodDetailSearchByName(string foodName);
-        Task<List<FoodServiceResponseDto>> BuscarInformaçõesPorNomes(string nomes);
     }
 }

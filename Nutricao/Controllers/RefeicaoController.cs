@@ -18,11 +18,23 @@ namespace Nutricao.Controllers
             _foodCalc = foodCalc;
         }
 
-        [HttpPost("refeicaoM/V/N")]
+        [HttpPost("RefeicaoUnicaM/V/N")]
         public async Task<IActionResult> AdicionaRefeicaoMVN([FromBody] CreateRefeicaoDto refeicao, string foodName)
         {
             var result = await _foodCalc.AdicionaRefeicao(refeicao, foodName);
             return Ok(result);
+        }
+        [HttpPost("RefeicaoEmLoteM/V/N/{nomes}")]
+        public async Task<List<FoodServiceResponseDto>> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicao, string nomes)
+        {
+            var result = await _foodCalc.CadastrarVariasRef(refeicao, nomes);
+            return result;
+        }
+        [HttpPost("CalcularNutrientesTotaisDiaria")]
+        public async Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano)
+        {
+            var result = await _foodCalc.CalculoTotal(dia, mes, ano);
+            return result;
         }
         [HttpGet("refeicaoMatinal/{dia}/{mes}/{ano}")]
         public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal(int dia, int mes, int ano)
@@ -43,17 +55,5 @@ namespace Nutricao.Controllers
             return result;
         }
 
-        [HttpPost("CalcularNutrientesTotaisDiaria")]
-        public async Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano)
-        {
-            var result = await _foodCalc.CalculoTotal(dia, mes, ano);
-            return result;
-        }
-        [HttpGet("Alimentos/{nomes}")]
-        public async Task<List<FoodServiceResponseDto>> GetFoods(string nomes)
-        {
-            var result = await _foodInformation.BuscarInformaçõesPorNomes(nomes);
-            return result;
-        }
     }
 }
