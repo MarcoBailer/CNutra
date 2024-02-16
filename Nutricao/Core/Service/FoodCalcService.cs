@@ -146,56 +146,46 @@ namespace Nutricao.Core.Service
             }
             return informacoes;
         }
-        public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal(int dia, int mes, int ano)
+        public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
-            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsMatinal == true)
-            .ToListAsync();
+            var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).ToListAsync();
 
-            return result;
+            return query;
         }
-        public async Task<List<RefeicaoMVN>> GetRefeicaoVespertina(int dia, int mes, int ano)
-        {
-            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsVespertina == true)
-            .ToListAsync();
-
-            return result;
-        }
-        public async Task<List<RefeicaoMVN>> GetRefeicaoNoturna(int dia, int mes, int ano)
-        {
-            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsNoturna == true)
-            .ToListAsync();
-
-            return result;
-        }
-        public async Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano)
+        public async Task<CalculoDaRefeicao> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
         {
             try
             {
-                var matinal = await GetRefeicaoMatinal(dia, mes, ano);
-                var vespertino = await GetRefeicaoVespertina(dia, mes, ano);
-                var noturno = await GetRefeicaoNoturna(dia, mes, ano);
-
-                var totalCarboidratos = CalculoDaRefeicao.CalcularTotalCarboidratos(matinal,vespertino,noturno);
-                var totalProteinas = CalculoDaRefeicao.CalcularTotalProteinas(matinal,vespertino,noturno);
-                var totalGorduras = CalculoDaRefeicao.CalcularTotalGorduras(matinal,vespertino,noturno);
-                var totalCalorias = CalculoDaRefeicao.CalcularTotalCalorias(matinal,vespertino,noturno);
-
-                var total = new CalculoDaRefeicao
+                var refe = await GetRefeicao(refeicao);
+                if(refe != null)
                 {
-                    TotalCarboidratos = totalCarboidratos,
-                    TotalProteinas = totalProteinas,
-                    TotalGorduras = totalGorduras,
-                    TotalCalorias = totalCalorias,
-                    Dia = dia,
-                    Mes = mes,
-                    Ano = ano
-                };
-                _context.Refeicao.Add(total);
-                await _context.SaveChangesAsync();
-                return total;
+                    var totalCarboidratos = CalculoDaRefeicao.CalcularTotalCarboidratos(refe);
+                    var totalProteinas = CalculoDaRefeicao.CalcularTotalProteinas(refe);
+                    var totalGorduras = CalculoDaRefeicao.CalcularTotalGorduras(refe);
+                    var totalCalorias = CalculoDaRefeicao.CalcularTotalCalorias(refe);
+
+                    var total = new CalculoDaRefeicao
+                    {
+                        TotalCarboidratos = totalCarboidratos,
+                        TotalProteinas = totalProteinas,
+                        TotalGorduras = totalGorduras,
+                        TotalCalorias = totalCalorias,
+                        Dia = refeicao.Dia,
+                        Mes = refeicao.Mes,
+                        Ano = refeicao.Ano,
+                    };
+                    _context.Refeicao.Add(total);
+                    await _context.SaveChangesAsync();
+                    return total;
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Erro ao calcular o total da refeição: {ex.Message}");
                 return null;
             }
         }
