@@ -149,9 +149,20 @@ namespace Nutricao.Core.Service
         public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
             var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).ToListAsync();
-
+            
             return query;
         }
+        public async Task<RefeicaoMVN> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
+        {
+            var query = await GetRefeicao(refeicao);
+            var result = query.Find(x => x.Nome == nome);
+            _context.RefeicaoMVN.Remove(result);
+            await _context.SaveChangesAsync();
+            return result;
+        }
+        //public async Task<RefeicaoMVN> UpdateRefeicao()
+        //{
+        //}
         public async Task<CalculoDaRefeicao> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
         {
             try

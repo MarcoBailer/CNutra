@@ -40,5 +40,17 @@ namespace Nutricao.Controllers
             var result = await _foodCalc.GetRefeicao(refeicao);
             return result;
         }
+        [HttpDelete("refeicao")]
+        public async Task<RefeicaoMVN> DeleteRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
+        {
+            var result = await _foodCalc.RemoveRefeicao(refeicao,nome);
+            return result;
+        }
+        //[HttpPut("refeicao")]
+        //public async Task<RefeicaoMVN> UpdateRefeicao([FromBody] UpdateRefeicaoDto refeicao,string nome)
+        //{
+        //    var result = await _foodCalc.UpdateRefeicao(refeicao,nome);
+        //    return result;
+        //}
     }
 }
