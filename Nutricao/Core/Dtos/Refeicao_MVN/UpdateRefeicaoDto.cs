@@ -7,8 +7,7 @@ namespace Nutricao.Core.Dtos.Refeicao
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
-        public bool IsMatinal { get; set; }
-        public bool IsVespertina { get; set; }
-        public bool IsNoturna { get; set; }
+        public string Nome { get; set; }
+        public string NomeAtt { get; set; }
     }
 }

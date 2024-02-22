@@ -41,16 +41,22 @@ namespace Nutricao.Controllers
             return result;
         }
         [HttpDelete("refeicao")]
-        public async Task<RefeicaoMVN> DeleteRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
+        public async Task<FoodServiceResponseDto> DeleteRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
         {
             var result = await _foodCalc.RemoveRefeicao(refeicao,nome);
             return result;
         }
-        //[HttpPut("refeicao")]
-        //public async Task<RefeicaoMVN> UpdateRefeicao([FromBody] UpdateRefeicaoDto refeicao,string nome)
-        //{
-        //    var result = await _foodCalc.UpdateRefeicao(refeicao,nome);
-        //    return result;
-        //}
+        [HttpPut("refeicao")]
+        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        {
+            var result = await _foodCalc.UpdateRefeicao(refeicao, updt);
+            return result;
+        }
+        [HttpPut("refeicaoData")]
+        public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        {
+            var result = await _foodCalc.UpdateRefeicaoDate(refeicao, updt);
+            return result;
+        }
     }
 }

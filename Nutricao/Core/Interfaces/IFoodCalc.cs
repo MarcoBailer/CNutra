@@ -11,8 +11,8 @@ namespace Nutricao.Core.Interfaces
         Task<List<FoodServiceResponseDto>> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicao, string nomes);
         Task<CalculoDaRefeicao> CalculoTotal([FromBody] ReadRefeicaoDto refeicao);
         Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao);
-        Task<RefeicaoMVN> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao,string nome);
-        //Task<RefeicaoMVN> UpdateRefeicao([FromBody] UpdateRefeicaoDto refeicao,string nome);
-
+        Task<FoodServiceResponseDto> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao,string nome);
+        Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt);
+        Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt);
     }
 }

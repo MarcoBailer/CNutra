@@ -152,17 +152,104 @@ namespace Nutricao.Core.Service
             
             return query;
         }
-        public async Task<RefeicaoMVN> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
+        public async Task<CalculoDaRefeicao> GetCalculoRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
-            var query = await GetRefeicao(refeicao);
-            var result = query.Find(x => x.Nome == nome);
-            _context.RefeicaoMVN.Remove(result);
-            await _context.SaveChangesAsync();
-            return result;
+            var query = await _context.Refeicao.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).FirstOrDefaultAsync();
+            return query;
         }
-        //public async Task<RefeicaoMVN> UpdateRefeicao()
-        //{
-        //}
+        public async Task<FoodServiceResponseDto> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
+        {
+            try
+            {
+                var query = await GetRefeicao(refeicao);
+                var result = query.Find(x => x.Nome == nome);
+
+                _context.RefeicaoMVN.Remove(result);
+                await _context.SaveChangesAsync();
+
+                var calc = await GetCalculoRefeicao(refeicao);
+                _context.Refeicao.Remove(calc)
+                    ;
+                await _context.SaveChangesAsync();
+                var newCalc = await CalculoTotal(refeicao);
+
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = true,
+                    Message = $"Refeição removida com sucesso. Recalculo dos nutrientes feito com sucesso."
+                };
+            }catch(Exception ex)
+            {
+                Console.WriteLine($"Erro ao remover refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        {
+            try
+            {
+                var query = await GetRefeicao(refeicao);
+                var result = query.Find(x => x.Nome == updt.Nome);
+                var resultAtt = await _foodInformation.FoodDetailSearchByName(updt.NomeAtt);
+
+                result.Nome = resultAtt.Food.Nome;
+                result.Carboidratos = resultAtt.Food.Carboidratos;
+                result.Proteinas = resultAtt.Food.Proteinas;
+                result.Lipidios = resultAtt.Food.Lipidios;
+                result.Calorias = resultAtt.Food.Calorias;
+
+                _context.RefeicaoMVN.Update(result);
+                await _context.SaveChangesAsync();
+
+                var calc = await GetCalculoRefeicao(refeicao);
+                _context.Refeicao.Remove(calc);
+
+                await _context.SaveChangesAsync();
+                var newCalc = await CalculoTotal(refeicao);
+
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = true,
+                    Message = $"Refeição atualizada com sucesso. {updt.Nome} atualizado para {updt.NomeAtt}. Recalculo dos nutrientes feito com sucesso."
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao atualizar refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        {
+            try
+            {
+                var query = await GetRefeicao(refeicao);
+                var result = query.Find(x => x.Nome == updt.Nome);
+                result.Dia = updt.Dia;
+                result.Mes = updt.Mes;
+                result.Ano = updt.Ano;
+
+                _context.RefeicaoMVN.Update(result);
+                await _context.SaveChangesAsync();
+
+                var calc = await GetCalculoRefeicao(refeicao);
+                _context.Refeicao.Remove(calc);
+
+                await _context.SaveChangesAsync();
+                var newCalc = await CalculoTotal(refeicao);
+
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = true,
+                    Message = $"Data da refeição atualizada com sucesso. De {refeicao.Dia} para {updt.Dia}. Faça o calculo nutricional para o dia {updt.Dia}"
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao atualizar refeição: {ex.Message}");
+                return null;
+            }
+        }
         public async Task<CalculoDaRefeicao> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
         {
             try
