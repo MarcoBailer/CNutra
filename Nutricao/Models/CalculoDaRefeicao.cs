@@ -14,25 +14,25 @@ namespace Nutricao.Models
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
-        public static double CalcularTotalCarboidratos(List<RefeicaoMVN> matinal, List<RefeicaoMVN> vespertina, List<RefeicaoMVN> noturna)
+        public static double CalcularTotalCarboidratos(List<RefeicaoMVN> refeicao)
         {
             return
-                RefeicaoMVN.CalcularTotalCarboidratos(matinal) + RefeicaoMVN.CalcularTotalCarboidratos(vespertina) + RefeicaoMVN.CalcularTotalCarboidratos(noturna);
+                RefeicaoMVN.CalcularTotalCarboidratos(refeicao);
         }
-        public static double CalcularTotalProteinas(List<RefeicaoMVN> matinal, List<RefeicaoMVN> vespertina, List<RefeicaoMVN> noturna)
+        public static double CalcularTotalProteinas(List<RefeicaoMVN> refeicao)
         {
             return
-                RefeicaoMVN.CalcularTotalProteinas(matinal) + RefeicaoMVN.CalcularTotalProteinas(vespertina) + RefeicaoMVN.CalcularTotalProteinas(noturna);
+                RefeicaoMVN.CalcularTotalProteinas(refeicao);
         }
-        public static double CalcularTotalGorduras(List<RefeicaoMVN> matinal, List<RefeicaoMVN> vespertina, List<RefeicaoMVN> noturna)
+        public static double CalcularTotalGorduras(List<RefeicaoMVN> refeicao)
         {
             return
-                RefeicaoMVN.CalcularTotalLipidios(matinal) + RefeicaoMVN.CalcularTotalLipidios(vespertina) + RefeicaoMVN.CalcularTotalLipidios(noturna);
+                RefeicaoMVN.CalcularTotalLipidios(refeicao);
         }
-        public static double CalcularTotalCalorias(List<RefeicaoMVN> matinal, List<RefeicaoMVN> vespertina, List<RefeicaoMVN> noturna)
+        public static double CalcularTotalCalorias(List<RefeicaoMVN> refeicao)
         {
             return
-                RefeicaoMVN.CalcularTotalCalorias(matinal) + RefeicaoMVN.CalcularTotalCalorias(vespertina) + RefeicaoMVN.CalcularTotalCalorias(noturna);
+                RefeicaoMVN.CalcularTotalCalorias(refeicao);
         }
     }
 

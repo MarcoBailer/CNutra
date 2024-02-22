@@ -10,11 +10,9 @@ namespace Nutricao.Controllers
 {
     public class RefeicaoController : Controller
     {
-        private readonly IFoodInfomation _foodInformation;
         private readonly IFoodCalc _foodCalc;
-        public RefeicaoController(IFoodInfomation foodInformation, IFoodCalc foodCalc)
+        public RefeicaoController(IFoodCalc foodCalc)
         {
-            _foodInformation = foodInformation;
             _foodCalc = foodCalc;
         }
 
@@ -31,29 +29,34 @@ namespace Nutricao.Controllers
             return result;
         }
         [HttpPost("CalcularNutrientesTotaisDiaria")]
-        public async Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano)
+        public async Task<CalculoDaRefeicao> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
         {
-            var result = await _foodCalc.CalculoTotal(dia, mes, ano);
+            var result = await _foodCalc.CalculoTotal(refeicao);
             return result;
         }
-        [HttpGet("refeicaoMatinal/{dia}/{mes}/{ano}")]
-        public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal(int dia, int mes, int ano)
+        [HttpGet("refeicao")]
+        public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal([FromQuery] ReadRefeicaoDto refeicao)
         {
-            var result = await _foodCalc.GetRefeicaoMatinal(dia, mes, ano);
+            var result = await _foodCalc.GetRefeicao(refeicao);
             return result;
         }
-        [HttpGet("refeicaoVespertina/{dia}/{mes}/{ano}")]
-        public async Task<List<RefeicaoMVN>> GetRefeicaoVespertina(int dia, int mes, int ano)
+        [HttpDelete("refeicao")]
+        public async Task<FoodServiceResponseDto> DeleteRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
         {
-            var result = await _foodCalc.GetRefeicaoVespertina(dia, mes, ano);
+            var result = await _foodCalc.RemoveRefeicao(refeicao,nome);
             return result;
         }
-        [HttpGet("refeicaoNoturna/{dia}/{mes}/{ano}")]
-        public async Task<List<RefeicaoMVN>> GetRefeicaoNoturna(int dia, int mes, int ano)
+        [HttpPut("refeicao")]
+        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
         {
-            var result = await _foodCalc.GetRefeicaoNoturna(dia, mes, ano);
+            var result = await _foodCalc.UpdateRefeicao(refeicao, updt);
             return result;
         }
-
+        [HttpPut("refeicaoData")]
+        public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        {
+            var result = await _foodCalc.UpdateRefeicaoDate(refeicao, updt);
+            return result;
+        }
     }
 }

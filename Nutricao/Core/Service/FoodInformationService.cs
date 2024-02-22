@@ -14,12 +14,10 @@ namespace Nutricao.Core.Service
     public class FoodInformationService : IFoodInfomation
     {
         private readonly FoodDataCentralApiConnection _apiService;
-        private readonly RefeicaoContext _context;
 
-        public FoodInformationService(FoodDataCentralApiConnection apiService, RefeicaoContext context)
+        public FoodInformationService(FoodDataCentralApiConnection apiService)
         {
             _apiService = apiService;
-            _context = context;
         }
         public async Task<FoodServiceResponseSimplifiedDto> GetAllFoodFromACategory(EFoodCategory foodCategory)
         {

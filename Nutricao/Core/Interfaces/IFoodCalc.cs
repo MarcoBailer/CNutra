@@ -8,11 +8,11 @@ namespace Nutricao.Core.Interfaces
     public interface IFoodCalc 
     {
         Task<FoodServiceResponseSimplifiedDto> AdicionaRefeicao([FromBody] CreateRefeicaoDto refeicao, string foodName);
-        Task<List<RefeicaoMVN>> GetRefeicaoMatinal(int dia, int mes, int ano);
-        Task<List<RefeicaoMVN>> GetRefeicaoVespertina(int dia, int mes, int ano);
-        Task<List<RefeicaoMVN>> GetRefeicaoNoturna(int dia, int mes, int ano);
-        Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano);
         Task<List<FoodServiceResponseDto>> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicao, string nomes);
-
+        Task<CalculoDaRefeicao> CalculoTotal([FromBody] ReadRefeicaoDto refeicao);
+        Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao);
+        Task<FoodServiceResponseDto> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao,string nome);
+        Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt);
+        Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt);
     }
 }

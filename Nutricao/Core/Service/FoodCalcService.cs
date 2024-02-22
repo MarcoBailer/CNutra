@@ -146,56 +146,144 @@ namespace Nutricao.Core.Service
             }
             return informacoes;
         }
-        public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal(int dia, int mes, int ano)
+        public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
-            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsMatinal == true)
-            .ToListAsync();
-
-            return result;
+            var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).ToListAsync();
+            
+            return query;
         }
-        public async Task<List<RefeicaoMVN>> GetRefeicaoVespertina(int dia, int mes, int ano)
+        public async Task<CalculoDaRefeicao> GetCalculoRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
-            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsVespertina == true)
-            .ToListAsync();
-
-            return result;
+            var query = await _context.Refeicao.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).FirstOrDefaultAsync();
+            return query;
         }
-        public async Task<List<RefeicaoMVN>> GetRefeicaoNoturna(int dia, int mes, int ano)
-        {
-            var result = await _context.RefeicaoMVN.Where(x => x.Dia == dia && x.Mes == mes && x.Ano == ano && x.IsNoturna == true)
-            .ToListAsync();
-
-            return result;
-        }
-        public async Task<CalculoDaRefeicao> CalculoTotal(int dia, int mes, int ano)
+        public async Task<FoodServiceResponseDto> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
         {
             try
             {
-                var matinal = await GetRefeicaoMatinal(dia, mes, ano);
-                var vespertino = await GetRefeicaoVespertina(dia, mes, ano);
-                var noturno = await GetRefeicaoNoturna(dia, mes, ano);
+                var query = await GetRefeicao(refeicao);
+                var result = query.Find(x => x.Nome == nome);
 
-                var totalCarboidratos = CalculoDaRefeicao.CalcularTotalCarboidratos(matinal,vespertino,noturno);
-                var totalProteinas = CalculoDaRefeicao.CalcularTotalProteinas(matinal,vespertino,noturno);
-                var totalGorduras = CalculoDaRefeicao.CalcularTotalGorduras(matinal,vespertino,noturno);
-                var totalCalorias = CalculoDaRefeicao.CalcularTotalCalorias(matinal,vespertino,noturno);
-
-                var total = new CalculoDaRefeicao
-                {
-                    TotalCarboidratos = totalCarboidratos,
-                    TotalProteinas = totalProteinas,
-                    TotalGorduras = totalGorduras,
-                    TotalCalorias = totalCalorias,
-                    Dia = dia,
-                    Mes = mes,
-                    Ano = ano
-                };
-                _context.Refeicao.Add(total);
+                _context.RefeicaoMVN.Remove(result);
                 await _context.SaveChangesAsync();
-                return total;
+
+                var calc = await GetCalculoRefeicao(refeicao);
+                _context.Refeicao.Remove(calc)
+                    ;
+                await _context.SaveChangesAsync();
+                var newCalc = await CalculoTotal(refeicao);
+
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = true,
+                    Message = $"Refeição removida com sucesso. Recalculo dos nutrientes feito com sucesso."
+                };
+            }catch(Exception ex)
+            {
+                Console.WriteLine($"Erro ao remover refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        {
+            try
+            {
+                var query = await GetRefeicao(refeicao);
+                var result = query.Find(x => x.Nome == updt.Nome);
+                var resultAtt = await _foodInformation.FoodDetailSearchByName(updt.NomeAtt);
+
+                result.Nome = resultAtt.Food.Nome;
+                result.Carboidratos = resultAtt.Food.Carboidratos;
+                result.Proteinas = resultAtt.Food.Proteinas;
+                result.Lipidios = resultAtt.Food.Lipidios;
+                result.Calorias = resultAtt.Food.Calorias;
+
+                _context.RefeicaoMVN.Update(result);
+                await _context.SaveChangesAsync();
+
+                var calc = await GetCalculoRefeicao(refeicao);
+                _context.Refeicao.Remove(calc);
+
+                await _context.SaveChangesAsync();
+                var newCalc = await CalculoTotal(refeicao);
+
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = true,
+                    Message = $"Refeição atualizada com sucesso. {updt.Nome} atualizado para {updt.NomeAtt}. Recalculo dos nutrientes feito com sucesso."
+                };
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Erro ao atualizar refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        {
+            try
+            {
+                var query = await GetRefeicao(refeicao);
+                var result = query.Find(x => x.Nome == updt.Nome);
+                result.Dia = updt.Dia;
+                result.Mes = updt.Mes;
+                result.Ano = updt.Ano;
+
+                _context.RefeicaoMVN.Update(result);
+                await _context.SaveChangesAsync();
+
+                var calc = await GetCalculoRefeicao(refeicao);
+                _context.Refeicao.Remove(calc);
+
+                await _context.SaveChangesAsync();
+                var newCalc = await CalculoTotal(refeicao);
+
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = true,
+                    Message = $"Data da refeição atualizada com sucesso. De {refeicao.Dia} para {updt.Dia}. Faça o calculo nutricional para o dia {updt.Dia}"
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao atualizar refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<CalculoDaRefeicao> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
+        {
+            try
+            {
+                var refe = await GetRefeicao(refeicao);
+                if(refe != null)
+                {
+                    var totalCarboidratos = CalculoDaRefeicao.CalcularTotalCarboidratos(refe);
+                    var totalProteinas = CalculoDaRefeicao.CalcularTotalProteinas(refe);
+                    var totalGorduras = CalculoDaRefeicao.CalcularTotalGorduras(refe);
+                    var totalCalorias = CalculoDaRefeicao.CalcularTotalCalorias(refe);
+
+                    var total = new CalculoDaRefeicao
+                    {
+                        TotalCarboidratos = totalCarboidratos,
+                        TotalProteinas = totalProteinas,
+                        TotalGorduras = totalGorduras,
+                        TotalCalorias = totalCalorias,
+                        Dia = refeicao.Dia,
+                        Mes = refeicao.Mes,
+                        Ano = refeicao.Ano,
+                    };
+                    _context.Refeicao.Add(total);
+                    await _context.SaveChangesAsync();
+                    return total;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao calcular o total da refeição: {ex.Message}");
                 return null;
             }
         }

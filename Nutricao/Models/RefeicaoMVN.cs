@@ -11,9 +11,9 @@
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
-        public bool IsMatinal { get; set; } = false;
-        public bool IsVespertina { get; set; } = false;
-        public bool IsNoturna { get; set; } = false;
+        public bool IsMatinal { get; set; }
+        public bool IsVespertina { get; set; }
+        public bool IsNoturna { get; set; }
 
         public static double CalcularTotalCarboidratos(List<RefeicaoMVN> refeicaoMVN)
         {
