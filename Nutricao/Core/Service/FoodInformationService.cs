@@ -71,6 +71,7 @@ namespace Nutricao.Core.Service
                         Nome = foodData.Nome,
                         Grupo = foodData.Grupo,
                         Calorias = foodData.Calorias,
+                        Fibra_Alimentar = foodData.Fibra_Alimentar,
                         Proteinas = foodData.Proteinas,
                         Lipidios = foodData.Lipidios,
                         Carboidratos = foodData.Carboidratos,

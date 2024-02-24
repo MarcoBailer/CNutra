@@ -11,6 +11,7 @@ namespace Nutricao.Models
         public double TotalProteinas { get; set; }
         public double TotalGorduras { get; set; }
         public double TotalCalorias { get; set; }
+        public double TotalFibras { get; set; }
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
@@ -33,6 +34,11 @@ namespace Nutricao.Models
         {
             return
                 RefeicaoMVN.CalcularTotalCalorias(refeicao);
+        }
+        public static double CalcularTotalFibras(List<RefeicaoMVN> refeicao)
+        {
+            return
+                RefeicaoMVN.CalcularTotalFibras(refeicao);
         }
     }
 

@@ -16,14 +16,8 @@ namespace Nutricao.Controllers
             _foodCalc = foodCalc;
         }
 
-        [HttpPost("RefeicaoUnicaM/V/N")]
-        public async Task<IActionResult> AdicionaRefeicaoMVN([FromBody] CreateRefeicaoDto refeicao, string foodName)
-        {
-            var result = await _foodCalc.AdicionaRefeicao(refeicao, foodName);
-            return Ok(result);
-        }
-        [HttpPost("RefeicaoEmLoteM/V/N/{nomes}")]
-        public async Task<List<FoodServiceResponseDto>> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicao, string nomes)
+        [HttpPost("AdicionarRefeicao/{nomes}")]
+        public async Task<FoodServiceResponseDto> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicao, string nomes)
         {
             var result = await _foodCalc.CadastrarVariasRef(refeicao, nomes);
             return result;
@@ -32,6 +26,12 @@ namespace Nutricao.Controllers
         public async Task<CalculoDaRefeicao> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
         {
             var result = await _foodCalc.CalculoTotal(refeicao);
+            return result;
+        }
+        [HttpGet("CalcularNutrientesTotaisPelaPosicao")]
+        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] ReadRefeicaoDto refeicao, int lugar)
+        {
+            var result = await _foodCalc.CalcularTotalRefeicaoPelaPosicao(refeicao, lugar);
             return result;
         }
         [HttpGet("refeicao")]

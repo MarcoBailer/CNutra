@@ -4,6 +4,7 @@ namespace Nutricao.Core.Dtos.Refeicao
 {
     public class CreateRefeicaoDto
     {
+        public int Posicao { get; set; }
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
