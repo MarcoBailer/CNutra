@@ -4,6 +4,7 @@ using Nutricao.Core.Dtos;
 using Nutricao.Core.Dtos.Context;
 using Nutricao.Core.Dtos.Refeicao;
 using Nutricao.Core.Interfaces;
+using Nutricao.Exceptions;
 using Nutricao.Models;
 
 namespace Nutricao.Core.Service
@@ -27,29 +28,32 @@ namespace Nutricao.Core.Service
             {
                 try
                 {
-                        var informacao = await _foodInformation.FoodDetailSearchByName(nome);
-                        var refeicao = new RefeicaoMVN
-                        {
-                            Nome = informacao.Food.Nome,
-                            Carboidratos = informacao.Food.Carboidratos,
-                            Proteinas = informacao.Food.Proteinas,
-                            Lipidios = informacao.Food.Lipidios,
-                            Calorias = informacao.Food.Calorias,
-                            Dia = refeicaoDto.Dia,
-                            Mes = refeicaoDto.Mes,
-                            Ano = refeicaoDto.Ano,
-                            IsMatinal = refeicaoDto.IsMatinal,
-                            IsVespertina = refeicaoDto.IsVespertina,
-                            IsNoturna = refeicaoDto.IsNoturna,
-                        };
-                        if (refeicao.IsMatinal || refeicao.IsVespertina || refeicao.IsNoturna)
-                        {
-                            _context.RefeicaoMVN.Add(refeicao);
-                            await _context.SaveChangesAsync();
-                            informacoes.Add(informacao);
-                        }
+                    var informacao = await _foodInformation.FoodDetailSearchByName(nome);
+                    var refeicao = new RefeicaoMVN
+                    {
+                        Nome = informacao.Food.Nome,
+                        Carboidratos = informacao.Food.Carboidratos,
+                        Proteinas = informacao.Food.Proteinas,
+                        Lipidios = informacao.Food.Lipidios,
+                        Calorias = informacao.Food.Calorias,
+                        Dia = refeicaoDto.Dia,
+                        Mes = refeicaoDto.Mes,
+                        Ano = refeicaoDto.Ano,
+                        IsMatinal = refeicaoDto.IsMatinal,
+                        IsVespertina = refeicaoDto.IsVespertina,
+                        IsNoturna = refeicaoDto.IsNoturna,
+                    };
+
+                    MainCallException.ValidarPeriodo(refeicaoDto.Dia, refeicaoDto.Mes, refeicaoDto.IsMatinal, refeicaoDto.IsVespertina, refeicaoDto.IsNoturna);
+
+                    if (refeicao.IsMatinal || refeicao.IsVespertina || refeicao.IsNoturna)
+                    {
+                        _context.RefeicaoMVN.Add(refeicao);
+                        await _context.SaveChangesAsync();
+                        informacoes.Add(informacao);
+                    }
                 }
-                catch (Exception ex)
+                catch (InvalidPeriodException ex)
                 {
                     return new FoodServiceResponseDto
                     {
@@ -143,6 +147,7 @@ namespace Nutricao.Core.Service
             {
                 var query = await GetRefeicao(refeicao);
                 var result = query.Find(x => x.Nome == updt.Nome);
+
                 result.Dia = updt.Dia;
                 result.Mes = updt.Mes;
                 result.Ano = updt.Ano;
