@@ -8,6 +8,7 @@
         public double Proteinas { get; set; }
         public double Calorias { get; set; }
         public double Lipidios { get; set; }
+        public double Fibra { get; set; }
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
@@ -30,6 +31,10 @@
         public static double CalcularTotalLipidios(List<RefeicaoMVN> refeicaoMVN)
         {
             return refeicaoMVN.Sum(r => r.Lipidios);
+        }
+        public static double CalcularTotalFibras(List<RefeicaoMVN> refeicaoMVN)
+        {
+            return refeicaoMVN.Sum(r => r.Fibra);
         }
     }
 }

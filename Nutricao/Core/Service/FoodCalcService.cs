@@ -36,6 +36,7 @@ namespace Nutricao.Core.Service
                         Proteinas = informacao.Food.Proteinas,
                         Lipidios = informacao.Food.Lipidios,
                         Calorias = informacao.Food.Calorias,
+                        Fibra = informacao.Food.Fibra_Alimentar,
                         Dia = refeicaoDto.Dia,
                         Mes = refeicaoDto.Mes,
                         Ano = refeicaoDto.Ano,
@@ -119,6 +120,7 @@ namespace Nutricao.Core.Service
                 result.Proteinas = resultAtt.Food.Proteinas;
                 result.Lipidios = resultAtt.Food.Lipidios;
                 result.Calorias = resultAtt.Food.Calorias;
+                result.Fibra = resultAtt.Food.Fibra_Alimentar;
 
                 _context.RefeicaoMVN.Update(result);
                 await _context.SaveChangesAsync();
@@ -184,6 +186,7 @@ namespace Nutricao.Core.Service
                     var totalProteinas = CalculoDaRefeicao.CalcularTotalProteinas(refe);
                     var totalGorduras = CalculoDaRefeicao.CalcularTotalGorduras(refe);
                     var totalCalorias = CalculoDaRefeicao.CalcularTotalCalorias(refe);
+                    var totalFibras = CalculoDaRefeicao.CalcularTotalFibras(refe);
 
                     var total = new CalculoDaRefeicao
                     {
@@ -191,6 +194,7 @@ namespace Nutricao.Core.Service
                         TotalProteinas = totalProteinas,
                         TotalGorduras = totalGorduras,
                         TotalCalorias = totalCalorias,
+                        TotalFibras = totalFibras,
                         Dia = refeicao.Dia,
                         Mes = refeicao.Mes,
                         Ano = refeicao.Ano,

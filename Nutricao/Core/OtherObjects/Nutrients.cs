@@ -9,6 +9,7 @@ namespace Nutricao.Core.OtherObjects
         public double Proteinas { get; set; }
         public double Lipidios { get; set; }
         public double Calorias { get; set; }
+        public double Fibra_Alimentar { get; set; }
         public string Vitaminas { get; set; }
         public string Minerais { get; set; }
     }
