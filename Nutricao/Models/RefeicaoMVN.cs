@@ -15,6 +15,7 @@
         public bool IsMatinal { get; set; }
         public bool IsVespertina { get; set; }
         public bool IsNoturna { get; set; }
+        public int Posicao { get; set; }
 
         public static double CalcularTotalCarboidratos(List<RefeicaoMVN> refeicaoMVN)
         {

@@ -4,6 +4,7 @@ using Nutricao.Core.Dtos;
 using Nutricao.Core.Dtos.Context;
 using Nutricao.Core.Dtos.Refeicao;
 using Nutricao.Core.Interfaces;
+using Nutricao.Core.OtherObjects;
 using Nutricao.Exceptions;
 using Nutricao.Models;
 
@@ -43,6 +44,7 @@ namespace Nutricao.Core.Service
                         IsMatinal = refeicaoDto.IsMatinal,
                         IsVespertina = refeicaoDto.IsVespertina,
                         IsNoturna = refeicaoDto.IsNoturna,
+                        Posicao = refeicaoDto.Posicao
                     };
 
                     MainCallException.ValidarPeriodo(refeicaoDto.Dia, refeicaoDto.Mes, refeicaoDto.IsMatinal, refeicaoDto.IsVespertina, refeicaoDto.IsNoturna);
@@ -71,14 +73,43 @@ namespace Nutricao.Core.Service
         }
         public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
-            var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).ToListAsync();
+            try
+            {
+                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).ToListAsync();
             
-            return query;
+                return query;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<List<RefeicaoMVN>> GetRefeicaoByPlace([FromQuery] ReadRefeicaoDto refeicao, int lugar)
+        {
+            try
+            {
+                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano && x.Posicao == lugar).ToListAsync();
+                return query;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
+                return null;
+            }
         }
         public async Task<CalculoDaRefeicao> GetCalculoRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
-            var query = await _context.Refeicao.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).FirstOrDefaultAsync();
-            return query;
+            try
+            {
+                var query = await _context.Refeicao.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).FirstOrDefaultAsync();
+                return query;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
+                return null;
+            }
         }
         public async Task<FoodServiceResponseDto> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
         {
@@ -212,6 +243,43 @@ namespace Nutricao.Core.Service
             {
                 Console.WriteLine($"Erro ao calcular o total da refeição: {ex.Message}");
                 return null;
+            }
+        }
+        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] ReadRefeicaoDto refeicao, int lugar)
+        {
+            try
+            {
+                var query = await GetRefeicaoByPlace(refeicao, lugar);
+
+                var carboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query);
+                var proteinas = RefeicaoMVN.CalcularTotalProteinas(query);
+                var calorias = RefeicaoMVN.CalcularTotalCalorias(query);
+                var gorduras = RefeicaoMVN.CalcularTotalLipidios(query);
+                var fibras = RefeicaoMVN.CalcularTotalFibras(query);
+
+                var refe = new Nutrients
+                {
+                    Nome = $"Total refei {lugar}",
+                    Carboidratos = carboidratos,
+                    Proteinas = proteinas,
+                    Calorias = calorias,
+                    Lipidios = gorduras,
+                    Fibra_Alimentar = fibras,
+                };
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = true,
+                    Message = $"Sua {lugar}° refeição somou esses nutrientes",
+                    Food = refe
+                };
+            }
+            catch (Exception ex)
+            {
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = false,
+                    Message = $"Erro ao calcular o total da refeição: {ex.Message}"
+                };
             }
         }
     }

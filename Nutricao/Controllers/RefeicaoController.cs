@@ -28,6 +28,12 @@ namespace Nutricao.Controllers
             var result = await _foodCalc.CalculoTotal(refeicao);
             return result;
         }
+        [HttpGet("CalcularNutrientesTotaisPelaPosicao")]
+        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] ReadRefeicaoDto refeicao, int lugar)
+        {
+            var result = await _foodCalc.CalcularTotalRefeicaoPelaPosicao(refeicao, lugar);
+            return result;
+        }
         [HttpGet("refeicao")]
         public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal([FromQuery] ReadRefeicaoDto refeicao)
         {
