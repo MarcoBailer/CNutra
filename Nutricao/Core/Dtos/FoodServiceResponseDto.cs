@@ -6,6 +6,7 @@ namespace Nutricao.Core.Dtos
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
+        public int StatusCode { get; set; }
         public Nutrients Food { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace Nutricao.Controllers
             return result;
         }
         [HttpPost("CalcularNutrientesTotaisDiaria")]
-        public async Task<CalculoDaRefeicao> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
+        public async Task<FoodServiceResponseDto> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
         {
             var result = await _foodCalc.CalculoTotal(refeicao);
             return result;
@@ -34,8 +34,14 @@ namespace Nutricao.Controllers
             var result = await _foodCalc.CalcularTotalRefeicaoPelaPosicao(refeicao, lugar);
             return result;
         }
+        [HttpGet("CalculoRefeicao")]
+        public async Task<CalculoDaRefeicao> GetCalculoRefeicao([FromQuery] ReadRefeicaoDto refeicao)
+        {
+            var result = await _foodCalc.GetCalculoRefeicao(refeicao);
+            return result;
+        }
         [HttpGet("refeicao")]
-        public async Task<List<RefeicaoMVN>> GetRefeicaoMatinal([FromQuery] ReadRefeicaoDto refeicao)
+        public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
             var result = await _foodCalc.GetRefeicao(refeicao);
             return result;
