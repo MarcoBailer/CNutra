@@ -7,7 +7,7 @@ namespace Nutricao.Core.Interfaces
 {
     public interface IFoodInfomation
     {
-        Task<FoodServiceResponseSimplifiedDto> GetAllFoodFromACategory(EFoodCategory foodCategory);
+        Task<FoodServiceResponseDto> GetAllFoodFromACategory(EFoodCategory foodCategory);
         Task<FoodServiceResponseDto> FoodDetailSearchByName(string foodName);
     }
 }

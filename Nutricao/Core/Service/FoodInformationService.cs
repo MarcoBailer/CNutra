@@ -19,7 +19,7 @@ namespace Nutricao.Core.Service
         {
             _apiService = apiService;
         }
-        public async Task<FoodServiceResponseSimplifiedDto> GetAllFoodFromACategory(EFoodCategory foodCategory)
+        public async Task<FoodServiceResponseDto> GetAllFoodFromACategory(EFoodCategory foodCategory)
         {
             try
             {
@@ -32,17 +32,17 @@ namespace Nutricao.Core.Service
                         Nome = foodData.Nome,
                         Grupo = foodData.Grupo,
                     });
-                    return new FoodServiceResponseSimplifiedDto
+                    return new FoodServiceResponseDto
                     {
                         IsSuccess = true,
                         StatusCode = 200,
                         Message = "Informações encontradas.",
-                        Food = result,
+                        Resume = result,
                     };
                 }
                 else
                 {
-                    return new FoodServiceResponseSimplifiedDto
+                    return new FoodServiceResponseDto
                     {
                         IsSuccess = false,
                         Message = $"Informações sobre a categoria {foodCategory} não encontradas.",
@@ -51,7 +51,7 @@ namespace Nutricao.Core.Service
             }
             catch (Exception ex)
             {
-                return new FoodServiceResponseSimplifiedDto
+                return new FoodServiceResponseDto
                 {
                     IsSuccess = false,
                     Message = $"Erro ao buscar informações sobre a categoria: {ex}.",
