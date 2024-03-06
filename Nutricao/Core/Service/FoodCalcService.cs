@@ -79,11 +79,11 @@ namespace Nutricao.Core.Service
             {
                 var refe = await GetRefeicao(refeicao);
 
-                var totalCarboidratos = CalculoDaRefeicao.CalcularTotalCarboidratos(refe);
-                var totalProteinas = CalculoDaRefeicao.CalcularTotalProteinas(refe);
-                var totalGorduras = CalculoDaRefeicao.CalcularTotalGorduras(refe);
-                var totalCalorias = CalculoDaRefeicao.CalcularTotalCalorias(refe);
-                var totalFibras = CalculoDaRefeicao.CalcularTotalFibras(refe);
+                var totalCarboidratos = RefeicaoMVN.CalcularTotalCarboidratos(refe);
+                var totalProteinas = RefeicaoMVN.CalcularTotalProteinas(refe);
+                var totalGorduras = RefeicaoMVN.CalcularTotalLipidios(refe);
+                var totalCalorias = RefeicaoMVN.CalcularTotalCalorias(refe);
+                var totalFibras = RefeicaoMVN.CalcularTotalFibras(refe);
 
                 var total = new CalculoDaRefeicao
                 {
