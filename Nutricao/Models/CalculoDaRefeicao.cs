@@ -15,31 +15,6 @@ namespace Nutricao.Models
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
-        public static double CalcularTotalCarboidratos(List<RefeicaoMVN> refeicao)
-        {
-            return
-                RefeicaoMVN.CalcularTotalCarboidratos(refeicao);
-        }
-        public static double CalcularTotalProteinas(List<RefeicaoMVN> refeicao)
-        {
-            return
-                RefeicaoMVN.CalcularTotalProteinas(refeicao);
-        }
-        public static double CalcularTotalGorduras(List<RefeicaoMVN> refeicao)
-        {
-            return
-                RefeicaoMVN.CalcularTotalLipidios(refeicao);
-        }
-        public static double CalcularTotalCalorias(List<RefeicaoMVN> refeicao)
-        {
-            return
-                RefeicaoMVN.CalcularTotalCalorias(refeicao);
-        }
-        public static double CalcularTotalFibras(List<RefeicaoMVN> refeicao)
-        {
-            return
-                RefeicaoMVN.CalcularTotalFibras(refeicao);
-        }
     }
 
 }

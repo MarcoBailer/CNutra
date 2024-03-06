@@ -8,6 +8,8 @@ using Nutricao.Core.Dtos.Context;
 
 namespace Nutricao.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class RefeicaoController : Controller
     {
         private readonly IFoodCalc _foodCalc;
