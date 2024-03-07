@@ -48,6 +48,12 @@ namespace Nutricao.Controllers
             var result = await _foodCalc.GetRefeicao(refeicao);
             return result;
         }
+        [HttpGet("refeicaoLugar")]
+        public async Task<List<RefeicaoMVN>> GetRefeicaoByPlace([FromQuery] ReadRefeicaoDto refeicao, int lugar)
+        {
+            var result = await _foodCalc.GetRefeicaoByPlace(refeicao, lugar);
+            return result;
+        }
         [HttpDelete("refeicao")]
         public async Task<FoodServiceResponseDto> DeleteRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
         {

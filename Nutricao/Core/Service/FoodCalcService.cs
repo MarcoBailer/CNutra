@@ -77,24 +77,18 @@ namespace Nutricao.Core.Service
         {
             try
             {
-                var refe = await GetRefeicao(refeicao);
-
-                var totalCarboidratos = RefeicaoMVN.CalcularTotalCarboidratos(refe);
-                var totalProteinas = RefeicaoMVN.CalcularTotalProteinas(refe);
-                var totalGorduras = RefeicaoMVN.CalcularTotalLipidios(refe);
-                var totalCalorias = RefeicaoMVN.CalcularTotalCalorias(refe);
-                var totalFibras = RefeicaoMVN.CalcularTotalFibras(refe);
+                var ListaDeRefeicao = await GetRefeicao(refeicao);
 
                 var total = new CalculoDaRefeicao
                 {
-                    TotalCarboidratos = totalCarboidratos,
-                    TotalProteinas = totalProteinas,
-                    TotalGorduras = totalGorduras,
-                    TotalCalorias = totalCalorias,
-                    TotalFibras = totalFibras,
+                    TotalCarboidratos = RefeicaoMVN.CalcularTotalCarboidratos(ListaDeRefeicao),
+                    TotalProteinas = RefeicaoMVN.CalcularTotalProteinas(ListaDeRefeicao),
+                    TotalGorduras = RefeicaoMVN.CalcularTotalLipidios(ListaDeRefeicao),
+                    TotalCalorias = RefeicaoMVN.CalcularTotalCalorias(ListaDeRefeicao),
+                    TotalFibras = RefeicaoMVN.CalcularTotalFibras(ListaDeRefeicao),
                     Dia = refeicao.Dia,
                     Mes = refeicao.Mes,
-                    Ano = refeicao.Ano,
+                    Ano = refeicao.Ano
                 };
                 _context.Refeicao.Add(total);
                 await _context.SaveChangesAsync();

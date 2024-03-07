@@ -5,48 +5,54 @@ using Nutricao.Core.Interfaces;
 using Nutricao.Core.Service;
 using Nutricao.Core.Service.Api;
 
-var builder = WebApplication.CreateBuilder(args);
-
-//Db
-builder.Services.AddDbContext<RefeicaoContext>(options =>
+public class Program
 {
-    var connectionString = builder.Configuration.GetConnectionString("refeicao");
-    options.UseSqlServer(connectionString);
-});
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+        //Db
+        builder.Services.AddDbContext<RefeicaoContext>(options =>
+        {
+            var connectionString = builder.Configuration.GetConnectionString("refeicao");
+            options.UseSqlServer(connectionString);
+        });
+        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+        // Add services to the container.
 
-//Config Api
-builder.Services.AddSingleton<FoodDataCentralApiConnection>(provider =>
-{
-    var apiKey = builder.Configuration["FoodDataCentralApiKey"];
-    return new FoodDataCentralApiConnection(apiKey);
-}); 
+        builder.Services.AddControllers();
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
 
-// Inject app Dependencies (Dependency Injection)
-builder.Services.AddScoped<IFoodInfomation, FoodInformationService>();
-builder.Services.AddScoped<IFoodCalc, FoodCalcService>();
+        //Config Api
+        builder.Services.AddSingleton(provider =>
+        {
+            var apiKey = builder.Configuration["FoodDataCentralApiKey"];
+            return new FoodDataCentralApiConnection(apiKey);
+        });
 
-var app = builder.Build();
+        // Inject app Dependencies (Dependency Injection)
+        builder.Services.AddScoped<IFoodInfomation, FoodInformationService>();
+        builder.Services.AddScoped<IFoodCalc, FoodCalcService>();
+
+        var app = builder.Build();
 
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
