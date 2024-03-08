@@ -20,10 +20,10 @@ namespace Nutricao.Core.Service
             _context = context;
             _foodInformation = foodInformation;
         }
-        public async Task<FoodServiceResponseDto> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicaoDto, string nomes)
+        public async Task<FoodServiceResponseDto> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicaoDto)
         {
             List<FoodServiceResponseDto> informacoes = new List<FoodServiceResponseDto>();
-            string[] nomesSeperados = nomes.Split(';');
+            string[] nomesSeperados = refeicaoDto.Nome.Split(';');
 
             foreach (var nome in nomesSeperados)
             {

@@ -7,7 +7,7 @@ namespace Nutricao.Core.Interfaces
 {
     public interface IFoodCalc 
     {
-        Task<FoodServiceResponseDto> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicao, string nomes);
+        Task<FoodServiceResponseDto> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicao);
         Task<FoodServiceResponseDto> CalculoTotal([FromBody] ReadRefeicaoDto refeicao);
         Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] ReadRefeicaoDto refeicao, int lugar);
         Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao);

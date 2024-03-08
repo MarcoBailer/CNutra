@@ -18,10 +18,10 @@ namespace Nutricao.Controllers
             _foodCalc = foodCalc;
         }
 
-        [HttpPost("AdicionarRefeicao/{nomes}")]
-        public async Task<FoodServiceResponseDto> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicao, string nomes)
+        [HttpPost("AdicionarRefeicao")]
+        public async Task<FoodServiceResponseDto> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicao)
         {
-            var result = await _foodCalc.CadastrarVariasRef(refeicao, nomes);
+            var result = await _foodCalc.CadastrarVariasRef(refeicao);
             return result;
         }
         [HttpPost("CalcularNutrientesTotaisDiaria")]
