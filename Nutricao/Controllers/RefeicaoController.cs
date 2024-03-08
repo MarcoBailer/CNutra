@@ -18,10 +18,10 @@ namespace Nutricao.Controllers
             _foodCalc = foodCalc;
         }
 
-        [HttpPost("AdicionarRefeicao/{nomes}")]
-        public async Task<FoodServiceResponseDto> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicao, string nomes)
+        [HttpPost("AdicionarRefeicao")]
+        public async Task<FoodServiceResponseDto> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicao)
         {
-            var result = await _foodCalc.CadastrarVariasRef(refeicao, nomes);
+            var result = await _foodCalc.CadastrarVariasRef(refeicao);
             return result;
         }
         [HttpPost("CalcularNutrientesTotaisDiaria")]
@@ -46,6 +46,12 @@ namespace Nutricao.Controllers
         public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
             var result = await _foodCalc.GetRefeicao(refeicao);
+            return result;
+        }
+        [HttpGet("refeicaoLugar")]
+        public async Task<List<RefeicaoMVN>> GetRefeicaoByPlace([FromQuery] ReadRefeicaoDto refeicao, int lugar)
+        {
+            var result = await _foodCalc.GetRefeicaoByPlace(refeicao, lugar);
             return result;
         }
         [HttpDelete("refeicao")]

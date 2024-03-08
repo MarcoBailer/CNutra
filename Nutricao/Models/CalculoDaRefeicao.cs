@@ -16,5 +16,4 @@ namespace Nutricao.Models
         public int Mes { get; set; }
         public int Ano { get; set; }
     }
-
 }

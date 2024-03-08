@@ -11,8 +11,8 @@ using Nutricao.Core.Dtos.Context;
 namespace Nutricao.Migrations
 {
     [DbContext(typeof(RefeicaoContext))]
-    [Migration("20240224181449_Posicao")]
-    partial class Posicao
+    [Migration("20240306213642_Nutricao")]
+    partial class Nutricao
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
