@@ -10,10 +10,12 @@ namespace WebApplicationIntegrationTest.ControllerTests
     public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         public Mock<IFoodCalc> FoodCalcMock { get; }
+        public Mock<IFoodInfomation> FoodInformationMock { get; }
 
         public CustomWebApplicationFactory()
         {
             FoodCalcMock = new Mock<IFoodCalc>();
+            FoodInformationMock = new Mock<IFoodInfomation>();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -23,6 +25,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
             builder.ConfigureTestServices(services =>
             {
                 services.AddSingleton(FoodCalcMock.Object);
+                services.AddSingleton(FoodInformationMock.Object);
             });
         }
     }
