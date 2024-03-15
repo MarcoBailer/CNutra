@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Nutricao.Core.OtherObjects;
+﻿using Nutricao.Core.OtherObjects;
 using Nutricao.Models;
 
 namespace Nutricao.Core.Dtos

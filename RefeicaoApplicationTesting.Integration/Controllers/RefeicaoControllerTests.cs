@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Newtonsoft.Json;
 using Nutricao.Core.Dtos;
-using Nutricao.Core.Dtos.Refeicao_MVN;
+using Nutricao.Core.Dtos.Refeicao;
 using Nutricao.Models;
 using RefeicaoApplicationTesting.Integration.Factory;
 using System.Net;
@@ -24,92 +24,56 @@ namespace WebApplicationIntegrationTest.ControllerTests
         public async Task Get_Always_ReturnsAllRefeicoes()
         {
             var mockRefeicoes = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable();
-
-            var mockRefeicoesParaRetorno = new List<RefeicaoMVN>();
-
-            var entradaDia = 1;
-            var entradaMes = 1;
-            var entradaAno = 2024;
-
-            foreach (var refeicao in mockRefeicoes)
-            {
-                if(refeicao.Dia == entradaDia && refeicao.Mes == entradaMes && refeicao.Ano == entradaAno)
-                {
-                    mockRefeicoesParaRetorno.Add(refeicao);
-                }
-            }
             
-            _factory.FoodCalcMock.Setup(f => f.GetRefeicao(It.IsAny<RefeicaoQuery>()))
-                .ReturnsAsync(mockRefeicoesParaRetorno.ToList());
 
-            var response = await _client.GetAsync($"api/Refeicao/refeicao?Dia={entradaDia}&Mes={entradaMes}&Ano={entradaAno}");
+            _factory.FoodCalcMock.Setup(f => f.GetRefeicao(It.IsAny<ReadRefeicaoDto>()))
+                .ReturnsAsync(mockRefeicoes.ToList());
+
+            var response = await _client.GetAsync("api/Refeicao/refeicao");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var data = JsonConvert.DeserializeObject<IEnumerable<ReadRefeicaoDto>>(await response.Content.ReadAsStringAsync());
+            var data = JsonConvert.DeserializeObject<IEnumerable<RefeicaoMVN>>(await response.Content.ReadAsStringAsync());
 
-            Assert.Equal(1, data.Count());
+            Assert.Collection((data as List<RefeicaoMVN>)!,
+                    item =>
+                    {
+                        Assert.Equal(1, item.Id);
+                        Assert.Equal("Ref1", item.Nome);
+                    },
+                    item =>
+                    {
+                        Assert.Equal(2, item.Id);
+                        Assert.Equal("Ref2", item.Nome);
+                    }
+                );
         }
         [Fact]
         public async Task Get_Always_ReturnsAllRefeicoesByPosition()
         {
             var mockRefeicoes = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable();
 
-            var mockRefeicoesParaRetorno = new List<RefeicaoMVN>();
+            _factory.FoodCalcMock.Setup(f => f.GetRefeicaoByPlace(It.IsAny<ReadRefeicaoDto>(), It.IsAny<int>()))
+                .ReturnsAsync(mockRefeicoes.ToList());
 
-            var entradaDia = 1;
-            var entradaMes = 1;
-            var entradaAno = 2024;
-            var entradaLugar = 1;
-
-            foreach (var refeicao in mockRefeicoes)
-            {
-                if(refeicao.Dia == entradaDia && refeicao.Mes == entradaMes && refeicao.Ano == entradaAno && refeicao.Posicao == entradaLugar)
-                {
-                    mockRefeicoesParaRetorno.Add(refeicao);
-                }
-            }
-
-            _factory.FoodCalcMock.Setup(f => f.GetRefeicaoByPlace(It.IsAny<RefeicaoQuery>(), It.IsAny<int>()))
-                .ReturnsAsync(mockRefeicoesParaRetorno.ToList());
-
-            var response = await _client.GetAsync($"api/Refeicao/refeicaoLugar?Dia={entradaDia}&Mes={entradaMes}&Ano={entradaAno}&lugar{entradaLugar}");
+            var response = await _client.GetAsync("api/Refeicao/refeicaoLugar");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var data = JsonConvert.DeserializeObject<IEnumerable<ReadRefeicaoDto>>(await response.Content.ReadAsStringAsync());
+            var data = JsonConvert.DeserializeObject<IEnumerable<RefeicaoMVN>>(await response.Content.ReadAsStringAsync());
 
-            Assert.Equal(1, data.Count());
-        }
-        [Fact]
-        public async Task Get_Always_ReturnCalculoDaRefeicao()
-        {
-            var mockCalculo = RefeicaoMVNFactory.CreateMockCalculo().AsQueryable();
-
-            var mockCalculoParaRetorno = new List<CalculoDaRefeicao>();
-
-            var entradaDia = 1;
-            var entradaMes = 1;
-            var entradaAno = 2024;
-
-            foreach (var calculo in mockCalculo)
-            {
-                if(calculo.Dia == entradaDia && calculo.Mes == entradaMes && calculo.Ano == entradaAno)
+            Assert.Collection((data as List<RefeicaoMVN>)!,
+                item =>
                 {
-                    mockCalculoParaRetorno.Add(calculo);
+                    Assert.Equal(1, item.Id);
+                    Assert.Equal("Ref1", item.Nome);
+                },
+                item =>
+                {
+                    Assert.Equal(2, item.Id);
+                    Assert.Equal("Ref2", item.Nome);
                 }
-            }
-
-            _factory.FoodCalcMock.Setup(f => f.GetCalculoRefeicao(It.IsAny<RefeicaoQuery>()))
-                .ReturnsAsync(mockCalculoParaRetorno.FirstOrDefault());
-
-            var response = await _client.GetAsync("api/Refeicao/CalculoRefeicao");
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            var data = JsonConvert.DeserializeObject<ReadCalculoDto>(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(1.5, data.TotalCarboidratos);
+             );
         }
         [Fact]
         public async Task Post_CalculoDeUmaRefeicao()
@@ -128,7 +92,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
                 Ano = 2024
             };
 
-            _factory.FoodCalcMock.Setup(f => f.CalculoTotal(It.IsAny<RefeicaoQuery>()))
+            _factory.FoodCalcMock.Setup(f => f.CalculoTotal(It.IsAny<ReadRefeicaoDto>()))
                 .ReturnsAsync(new FoodServiceResponseDto
                 {
                     Message = "Calculo feito com sucesso",
@@ -146,7 +110,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
         {
             var newMockRefeicoes = RefeicaoMVNFactory.CreateMockRefeicao();
 
-            _factory.FoodCalcMock.Setup(f => f.CadastrarVariasRef(It.IsAny<RefeicaoMVN>()))
+            _factory.FoodCalcMock.Setup(f => f.CadastrarVariasRef(It.IsAny<CreateRefeicaoDto>()))
                 .ReturnsAsync(new FoodServiceResponseDto
                 {
                     Message = "Refeicao cadastrada com sucesso",

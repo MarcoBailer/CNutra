@@ -1,6 +1,6 @@
 ﻿using Nutricao.Core.OtherObjects;
 
-namespace Nutricao.Core.Dtos.Refeicao_MVN
+namespace Nutricao.Core.Dtos.Refeicao
 {
     public class UpdateRefeicaoDto
     {
@@ -8,5 +8,6 @@ namespace Nutricao.Core.Dtos.Refeicao_MVN
         public int Mes { get; set; }
         public int Ano { get; set; }
         public string Nome { get; set; }
+        public string NomeAtt { get; set; }
     }
 }

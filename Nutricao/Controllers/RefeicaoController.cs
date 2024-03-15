@@ -4,7 +4,7 @@ using Nutricao.Core.Dtos;
 using Nutricao.Core.Interfaces;
 using Nutricao.Models;
 using AutoMapper;
-using Nutricao.Core.Dtos.Refeicao_MVN;
+using Nutricao.Core.Dtos.Context;
 
 namespace Nutricao.Controllers
 {
@@ -13,76 +13,61 @@ namespace Nutricao.Controllers
     public class RefeicaoController : Controller
     {
         private readonly IFoodCalc _foodCalc;
-        private readonly IMapper _mapper;
-
-        public RefeicaoController(IFoodCalc foodCalc, IMapper mapper)
+        public RefeicaoController(IFoodCalc foodCalc)
         {
             _foodCalc = foodCalc;
-            _mapper = mapper;
         }
 
         [HttpPost("AdicionarRefeicao")]
-        public async Task<FoodServiceResponseDto> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicaoDto)
+        public async Task<FoodServiceResponseDto> AdicionarRefsEmLote([FromBody] CreateRefeicaoDto refeicao)
         {
-            RefeicaoMVN refeicaoMVN = _mapper.Map<RefeicaoMVN>(refeicaoDto);
-
-            var result = await _foodCalc.CadastrarVariasRef(refeicaoMVN);
-
+            var result = await _foodCalc.CadastrarVariasRef(refeicao);
             return result;
         }
         [HttpPost("CalcularNutrientesTotaisDiaria")]
-        public async Task<FoodServiceResponseDto> CalculoTotal([FromQuery] RefeicaoQuery refeicao)
+        public async Task<FoodServiceResponseDto> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
         {
             var result = await _foodCalc.CalculoTotal(refeicao);
             return result;
         }
         [HttpGet("CalcularNutrientesTotaisPelaPosicao")]
-        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] RefeicaoQuery refeicao, int lugar)
+        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] ReadRefeicaoDto refeicao, int lugar)
         {
             var result = await _foodCalc.CalcularTotalRefeicaoPelaPosicao(refeicao, lugar);
             return result;
         }
         [HttpGet("CalculoRefeicao")]
-        public async Task<ReadCalculoDto> GetCalculoRefeicao([FromQuery] RefeicaoQuery refeicao)
+        public async Task<CalculoDaRefeicao> GetCalculoRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
             var result = await _foodCalc.GetCalculoRefeicao(refeicao);
-
-            ReadCalculoDto calculo = _mapper.Map<ReadCalculoDto>(result);
-
-            return calculo;
+            return result;
         }
         [HttpGet("refeicao")]
-        public async Task<List<ReadRefeicaoDto>> GetRefeicao([FromQuery] RefeicaoQuery refeicao)
+        public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao)
         {
             var result = await _foodCalc.GetRefeicao(refeicao);
-
-            List<ReadRefeicaoDto> refeicaoMVN = _mapper.Map<List<ReadRefeicaoDto>>(result);
-
-            return refeicaoMVN;
+            return result;
         }
         [HttpGet("refeicaoLugar")]
-        public async Task<List<ReadRefeicaoDto>> GetRefeicaoByPlace([FromQuery] RefeicaoQuery refeicao, int lugar)
+        public async Task<List<RefeicaoMVN>> GetRefeicaoByPlace([FromQuery] ReadRefeicaoDto refeicao, int lugar)
         {
             var result = await _foodCalc.GetRefeicaoByPlace(refeicao, lugar);
-
-            List<ReadRefeicaoDto> refeicaoMVN = _mapper.Map<List<ReadRefeicaoDto>>(result);
-
-            return refeicaoMVN;
+            return result;
         }
         [HttpDelete("refeicao")]
-        public async Task<FoodServiceResponseDto> DeleteRefeicao([FromQuery] RefeicaoQuery refeicao, string nome)
+        public async Task<FoodServiceResponseDto> DeleteRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
         {
             var result = await _foodCalc.RemoveRefeicao(refeicao,nome);
             return result;
         }
         [HttpPut("refeicao")]
-        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] RefeicaoQuery refeicao, string nome, string nomeUpdt)
+        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
         {
-            var result = await _foodCalc.UpdateRefeicao(refeicao, nome, nomeUpdt);
+            var result = await _foodCalc.UpdateRefeicao(refeicao, updt);
             return result;
         }
         [HttpPut("refeicaoData")]
-        public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] RefeicaoQuery refeicao, [FromBody] UpdateRefeicaoDto updt)
+        public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
         {
             var result = await _foodCalc.UpdateRefeicaoDate(refeicao, updt);
             return result;
