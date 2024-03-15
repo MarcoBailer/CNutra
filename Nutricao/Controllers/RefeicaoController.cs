@@ -69,13 +69,13 @@ namespace Nutricao.Controllers
 
             return refeicaoMVN;
         }
-        [HttpDelete("refeicao")]
+        [HttpDelete("RemoverRefeicao")]
         public async Task<FoodServiceResponseDto> DeleteRefeicao([FromQuery] RefeicaoQuery refeicao, string nome)
         {
             var result = await _foodCalc.RemoveRefeicao(refeicao,nome);
             return result;
         }
-        [HttpPut("refeicao")]
+        [HttpPut("UpdateRefeicao")]
         public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] RefeicaoQuery refeicao, string nome, string nomeUpdt)
         {
             var result = await _foodCalc.UpdateRefeicao(refeicao, nome, nomeUpdt);

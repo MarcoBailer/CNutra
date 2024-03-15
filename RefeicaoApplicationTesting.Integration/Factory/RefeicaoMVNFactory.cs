@@ -31,40 +31,34 @@ namespace RefeicaoApplicationTesting.Integration.Factory
         {
             return new RefeicaoMVN
             {
-                Id = 3, Nome="Ref3", Dia=3, Mes=3, Ano=2024,
-                Carboidratos=1.5, Proteinas=1, Calorias=2, Lipidios=3, Fibra=0.5,
-                Posicao=1, IsMatinal=true, IsNoturna=false, IsVespertina=false
+                Id = 3,
+                Nome = "Ref3",
+                Dia = 3,
+                Mes = 3,
+                Ano = 2024,
+                Carboidratos = 1.5,
+                Proteinas = 1,
+                Calorias = 2,
+                Lipidios = 3,
+                Fibra = 0.5,
+                Posicao = 1,
+                IsMatinal = true,
+                IsNoturna = false,
+                IsVespertina = false
             };
         }
-
-        public static List<CalculoDaRefeicao> CreateMockCalculo()
+        public static CalculoDaRefeicao CreateMockRefeicaoCalculada()
         {
-            return new List<CalculoDaRefeicao>
+            return new CalculoDaRefeicao
             {
-                new CalculoDaRefeicao
-                {
-                    Id = 1,
-                    TotalCarboidratos = 1.5,
-                    TotalProteinas = 1,
-                    TotalGorduras = 3,
-                    TotalCalorias = 2,
-                    TotalFibras = 0.5,
-                    Dia = 1,
-                    Mes = 1,
-                    Ano = 2024
-                },
-                new CalculoDaRefeicao
-                {
-                    Id = 2,
-                    TotalCarboidratos = 0.5,
-                    TotalProteinas = 2,
-                    TotalGorduras = 1,
-                    TotalCalorias = 1.4,
-                    TotalFibras = 3.5,
-                    Dia = 2,
-                    Mes = 2,
-                    Ano = 2024
-                }
+                Dia = 1,
+                Mes = 1,
+                Ano = 2024,
+                TotalCarboidratos = 1.5,
+                TotalProteinas = 1,
+                TotalCalorias = 2,
+                TotalGorduras = 3,
+                TotalFibras = 0.5
             };
         }
     }

@@ -116,20 +116,14 @@ namespace Nutricao.Core.Service
             {
                 var query = await GetRefeicaoByPlace(refeicao, lugar);
 
-                var carboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query);
-                var proteinas = RefeicaoMVN.CalcularTotalProteinas(query);
-                var calorias = RefeicaoMVN.CalcularTotalCalorias(query);
-                var gorduras = RefeicaoMVN.CalcularTotalLipidios(query);
-                var fibras = RefeicaoMVN.CalcularTotalFibras(query);
-
                 var refe = new Nutrients
                 {
                     Nome = $"Total refei {lugar}",
-                    Carboidratos = carboidratos,
-                    Proteinas = proteinas,
-                    Calorias = calorias,
-                    Lipidios = gorduras,
-                    Fibra_Alimentar = fibras,
+                    Carboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query),
+                    Proteinas = RefeicaoMVN.CalcularTotalProteinas(query),
+                    Calorias = RefeicaoMVN.CalcularTotalCalorias(query),
+                    Lipidios = RefeicaoMVN.CalcularTotalLipidios(query),
+                    Fibra_Alimentar = RefeicaoMVN.CalcularTotalFibras(query),
                 };
                 return new FoodServiceResponseDto
                 {
@@ -202,10 +196,13 @@ namespace Nutricao.Core.Service
                 await _context.SaveChangesAsync();
 
                 var calc = await GetCalculoRefeicao(refeicaoQr);
-                _context.Refeicao.Remove(calc)
-                    ;
-                await _context.SaveChangesAsync();
-                var newCalc = await CalculoTotal(refeicaoQr);
+
+                if (calc != null)
+                {
+                    _context.Refeicao.Remove(calc);
+                    await _context.SaveChangesAsync();
+                    await CalculoTotal(refeicaoQr);
+                }
 
                 return new FoodServiceResponseDto
                 {
@@ -223,13 +220,21 @@ namespace Nutricao.Core.Service
                 };
             }
         }
-        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] RefeicaoQuery refeicao, string nome, string nomeUpdt)
+        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome, string nomeUpdt)
         {
             try
             {
                 var query = await GetRefeicao(refeicao);
                 var result = query.Find(x => x.Nome == nome);
-
+                if (refeicaoToUpdate == null)
+                {
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        StatusCode = 404,
+                        Message = $"Refeição com nome '{nome}' não encontrada para atualização."
+                    };
+                }
                 var resultAtt = await _foodInformation.FoodDetailSearchByName(nomeUpdt);
 
                 result.Nome = resultAtt.Food.Nome;
@@ -244,7 +249,6 @@ namespace Nutricao.Core.Service
 
                 var calc = await GetCalculoRefeicao(refeicao);
                 _context.Refeicao.Remove(calc);
-
                 await _context.SaveChangesAsync();
                 var newCalc = await CalculoTotal(refeicao);
 
