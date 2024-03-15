@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nutricao.Core.Dtos;
 using Nutricao.Core.Dtos.Context;
-using Nutricao.Core.Dtos.Refeicao;
+using Nutricao.Core.Dtos.Refeicao_MVN;
 using Nutricao.Core.Interfaces;
 using Nutricao.Core.OtherObjects;
 using Nutricao.Exceptions;
@@ -20,9 +22,9 @@ namespace Nutricao.Core.Service
             _context = context;
             _foodInformation = foodInformation;
         }
-        public async Task<FoodServiceResponseDto> CadastrarVariasRef([FromBody] CreateRefeicaoDto refeicaoDto)
+        public async Task<FoodServiceResponseDto> CadastrarVariasRef([FromBody] RefeicaoMVN refeicaoDto)
         {
-            List<FoodServiceResponseDto> informacoes = new List<FoodServiceResponseDto>();
+
             string[] nomesSeperados = refeicaoDto.Nome.Split(';');
 
             foreach (var nome in nomesSeperados)
@@ -53,7 +55,6 @@ namespace Nutricao.Core.Service
                     {
                         _context.RefeicaoMVN.Add(refeicao);
                         await _context.SaveChangesAsync();
-                        informacoes.Add(informacao);
                     }
                 }
                 catch (InvalidPeriodException ex)
@@ -73,11 +74,11 @@ namespace Nutricao.Core.Service
                 Message = "Operacao realizada com sucesso"
             };
         }
-        public async Task<FoodServiceResponseDto> CalculoTotal([FromQuery] ReadRefeicaoDto refeicao)
+        public async Task<FoodServiceResponseDto> CalculoTotal([FromQuery] RefeicaoQuery refeicaoDto)
         {
             try
             {
-                var ListaDeRefeicao = await GetRefeicao(refeicao);
+                var ListaDeRefeicao = await GetRefeicao(refeicaoDto);
 
                 var total = new CalculoDaRefeicao
                 {
@@ -86,9 +87,9 @@ namespace Nutricao.Core.Service
                     TotalGorduras = RefeicaoMVN.CalcularTotalLipidios(ListaDeRefeicao),
                     TotalCalorias = RefeicaoMVN.CalcularTotalCalorias(ListaDeRefeicao),
                     TotalFibras = RefeicaoMVN.CalcularTotalFibras(ListaDeRefeicao),
-                    Dia = refeicao.Dia,
-                    Mes = refeicao.Mes,
-                    Ano = refeicao.Ano
+                    Dia = refeicaoDto.Dia,
+                    Mes = refeicaoDto.Mes,
+                    Ano = refeicaoDto.Ano
                 };
                 _context.Refeicao.Add(total);
                 await _context.SaveChangesAsync();
@@ -96,7 +97,7 @@ namespace Nutricao.Core.Service
                 {
                     IsSuccess = true,
                     StatusCode = 201,
-                    Message = $"Calculo nutricional feito com sucesso para o dia {refeicao.Dia}/{refeicao.Mes}/{refeicao.Ano}"
+                    Message = $"Calculo nutricional feito com sucesso para o dia {refeicaoDto.Dia}/{refeicaoDto.Mes}/{refeicaoDto.Ano}"
                 };
             }
             catch (Exception ex)
@@ -109,7 +110,7 @@ namespace Nutricao.Core.Service
                 };
             }
         }
-        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] ReadRefeicaoDto refeicao, int lugar)
+        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] RefeicaoQuery refeicao, int lugar)
         {
             try
             {
@@ -148,12 +149,12 @@ namespace Nutricao.Core.Service
                 };
             }
         }
-        public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] ReadRefeicaoDto refeicao)
+        public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] RefeicaoQuery refeicaoQr)
         {
             try
             {
-                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).ToListAsync();
-            
+                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano).ToListAsync();
+         
                 return query;
             }
             catch(Exception ex)
@@ -162,11 +163,12 @@ namespace Nutricao.Core.Service
                 return null;
             }
         }
-        public async Task<List<RefeicaoMVN>> GetRefeicaoByPlace([FromQuery] ReadRefeicaoDto refeicao, int lugar)
+        public async Task<List<RefeicaoMVN>> GetRefeicaoByPlace([FromQuery] RefeicaoQuery refeicaoQr, int lugar)
         {
             try
             {
-                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano && x.Posicao == lugar).ToListAsync();
+                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano && x.Posicao == lugar).ToListAsync();
+
                 return query;
             }
             catch(Exception ex)
@@ -175,11 +177,12 @@ namespace Nutricao.Core.Service
                 return null;
             }
         }
-        public async Task<CalculoDaRefeicao> GetCalculoRefeicao([FromQuery] ReadRefeicaoDto refeicao)
+        public async Task<CalculoDaRefeicao> GetCalculoRefeicao([FromQuery] RefeicaoQuery refeicaoQr)
         {
             try
             {
-                var query = await _context.Refeicao.Where(x => x.Dia == refeicao.Dia && x.Mes == refeicao.Mes && x.Ano == refeicao.Ano).FirstOrDefaultAsync();
+                var query = await _context.Refeicao.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano).FirstOrDefaultAsync();
+
                 return query;
             }
             catch(Exception ex)
@@ -188,21 +191,21 @@ namespace Nutricao.Core.Service
                 return null;
             }
         }
-        public async Task<FoodServiceResponseDto> RemoveRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome)
+        public async Task<FoodServiceResponseDto> RemoveRefeicao([FromQuery] RefeicaoQuery refeicaoQr, string nome)
         {
             try
             {
-                var query = await GetRefeicao(refeicao);
+                var query = await GetRefeicao(refeicaoQr);
                 var result = query.Find(x => x.Nome == nome);
 
                 _context.RefeicaoMVN.Remove(result);
                 await _context.SaveChangesAsync();
 
-                var calc = await GetCalculoRefeicao(refeicao);
+                var calc = await GetCalculoRefeicao(refeicaoQr);
                 _context.Refeicao.Remove(calc)
                     ;
                 await _context.SaveChangesAsync();
-                var newCalc = await CalculoTotal(refeicao);
+                var newCalc = await CalculoTotal(refeicaoQr);
 
                 return new FoodServiceResponseDto
                 {
@@ -220,13 +223,14 @@ namespace Nutricao.Core.Service
                 };
             }
         }
-        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] RefeicaoQuery refeicao, string nome, string nomeUpdt)
         {
             try
             {
                 var query = await GetRefeicao(refeicao);
-                var result = query.Find(x => x.Nome == updt.Nome);
-                var resultAtt = await _foodInformation.FoodDetailSearchByName(updt.NomeAtt);
+                var result = query.Find(x => x.Nome == nome);
+
+                var resultAtt = await _foodInformation.FoodDetailSearchByName(nomeUpdt);
 
                 result.Nome = resultAtt.Food.Nome;
                 result.Carboidratos = resultAtt.Food.Carboidratos;
@@ -248,7 +252,7 @@ namespace Nutricao.Core.Service
                 {
                     IsSuccess = true,
                     StatusCode = 200,
-                    Message = $"Refeição atualizada com sucesso. {updt.Nome} atualizado para {updt.NomeAtt}. Recalculo dos nutrientes feito com sucesso."
+                    Message = $"Refeição atualizada com sucesso. {nome} atualizado para {nomeUpdt}. Recalculo dos nutrientes feito com sucesso."
                 };
             }
             catch (Exception ex)
@@ -261,7 +265,7 @@ namespace Nutricao.Core.Service
                 };
             }
         }
-        public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] ReadRefeicaoDto refeicao, [FromBody] UpdateRefeicaoDto updt)
+        public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] RefeicaoQuery refeicao, [FromBody] UpdateRefeicaoDto updt)
         {
             try
             {
