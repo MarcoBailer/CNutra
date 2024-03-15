@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
 using Nutricao.Core.Dtos.Refeicao;
+using Nutricao.Core.Dtos.Refeicao_MVN;
 using Nutricao.Models;
 
 namespace Nutricao.Profiles
 {
-    public class RefeicaoMVN : Profile
+    public class RefeicaoMVNProfile : Profile
     {
-        public RefeicaoMVN()
+        public RefeicaoMVNProfile()
         {
             CreateMap<CreateRefeicaoDto, RefeicaoMVN>();
-            CreateMap<ReadRefeicaoDto, RefeicaoMVN>();
+            CreateMap<RefeicaoMVN, ReadRefeicaoDto>();
+            CreateMap<CalculoDaRefeicao, ReadCalculoDto>();
             CreateMap<UpdateRefeicaoDto, RefeicaoMVN>();
         }
     }
