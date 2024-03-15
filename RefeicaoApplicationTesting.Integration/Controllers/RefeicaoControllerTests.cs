@@ -27,7 +27,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
         public async Task Get_Always_ReturnsAllRefeicoes()
         {
             var mockRefeicoes = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable();
-            
+
             var mockRead = new ReadRefeicaoDto
             {
                 Dia = 1,
@@ -128,7 +128,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
 
             _factory.FoodCalcMock.VerifyAll();
         }
-         [Fact]
+        [Fact]
         public async Task Get_Always_ReturnAllCalculoDeRefeicao()
         {
             var mockRefeicaoCalculada = RefeicaoMVNFactory.CreateMockRefeicaoCalculada();
