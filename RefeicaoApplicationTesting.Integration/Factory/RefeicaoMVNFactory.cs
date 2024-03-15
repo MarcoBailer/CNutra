@@ -36,5 +36,19 @@ namespace RefeicaoApplicationTesting.Integration.Factory
                 Posicao=1, IsMatinal=true, IsNoturna=false, IsVespertina=false
             };
         }
+        public static CalculoDaRefeicao CreateMockRefeicaoCalculada()
+        {
+            return new CalculoDaRefeicao
+            {
+                Dia = 1,
+                Mes = 1,
+                Ano = 2024,
+                TotalCarboidratos = 1.5, 
+                TotalProteinas = 1, 
+                TotalCalorias = 2, 
+                TotalGorduras= 3, 
+                TotalFibras= 0.5
+            };
+        }
     }
 }

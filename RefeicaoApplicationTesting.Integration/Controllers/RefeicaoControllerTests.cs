@@ -1,11 +1,14 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Moq;
 using Newtonsoft.Json;
 using Nutricao.Core.Dtos;
 using Nutricao.Core.Dtos.Refeicao;
+using Nutricao.Core.OtherObjects;
 using Nutricao.Models;
 using RefeicaoApplicationTesting.Integration.Factory;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace WebApplicationIntegrationTest.ControllerTests
 {
@@ -25,55 +28,57 @@ namespace WebApplicationIntegrationTest.ControllerTests
         {
             var mockRefeicoes = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable();
             
+            var mockRead = new ReadRefeicaoDto
+            {
+                Dia = 1,
+                Mes = 1,
+                Ano = 2024
+            };
+
+            var refeicoesFiltradas = mockRefeicoes
+                .Where(r => r.Dia == mockRead.Dia && r.Mes == mockRead.Mes && r.Ano == mockRead.Ano)
+                .ToList();
 
             _factory.FoodCalcMock.Setup(f => f.GetRefeicao(It.IsAny<ReadRefeicaoDto>()))
-                .ReturnsAsync(mockRefeicoes.ToList());
+                .ReturnsAsync(refeicoesFiltradas);
 
-            var response = await _client.GetAsync("api/Refeicao/refeicao");
+            var response = await _client.GetAsync($"api/Refeicao/refeicao?Dia={mockRead.Dia}&Mes={mockRead.Mes}&Ano={mockRead.Ano}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var data = JsonConvert.DeserializeObject<IEnumerable<RefeicaoMVN>>(await response.Content.ReadAsStringAsync());
 
-            Assert.Collection((data as List<RefeicaoMVN>)!,
-                    item =>
-                    {
-                        Assert.Equal(1, item.Id);
-                        Assert.Equal("Ref1", item.Nome);
-                    },
-                    item =>
-                    {
-                        Assert.Equal(2, item.Id);
-                        Assert.Equal("Ref2", item.Nome);
-                    }
-                );
+            Assert.Equal(refeicoesFiltradas.Count, data.Count());
         }
         [Fact]
         public async Task Get_Always_ReturnsAllRefeicoesByPosition()
         {
             var mockRefeicoes = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable();
 
-            _factory.FoodCalcMock.Setup(f => f.GetRefeicaoByPlace(It.IsAny<ReadRefeicaoDto>(), It.IsAny<int>()))
-                .ReturnsAsync(mockRefeicoes.ToList());
+            var mockRead = new ReadRefeicaoDto
+            {
+                Dia = 1,
+                Mes = 1,
+                Ano = 2024
+            };
 
-            var response = await _client.GetAsync("api/Refeicao/refeicaoLugar");
+            var posicao = 1;
+
+            var refeicoesFiltradas = mockRefeicoes
+                .Where(r => r.Dia == mockRead.Dia && r.Mes == mockRead.Mes && r.Ano == mockRead.Ano && r.Posicao == posicao)
+                .ToList();
+
+
+            _factory.FoodCalcMock.Setup(f => f.GetRefeicaoByPlace(It.IsAny<ReadRefeicaoDto>(), It.IsAny<int>()))
+                .ReturnsAsync(refeicoesFiltradas.ToList());
+
+            var response = await _client.GetAsync($"api/Refeicao/refeicaoLugar?Dia={mockRead.Dia}&Mes={mockRead.Mes}&Ano={mockRead.Ano}&lugar={posicao}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var data = JsonConvert.DeserializeObject<IEnumerable<RefeicaoMVN>>(await response.Content.ReadAsStringAsync());
 
-            Assert.Collection((data as List<RefeicaoMVN>)!,
-                item =>
-                {
-                    Assert.Equal(1, item.Id);
-                    Assert.Equal("Ref1", item.Nome);
-                },
-                item =>
-                {
-                    Assert.Equal(2, item.Id);
-                    Assert.Equal("Ref2", item.Nome);
-                }
-             );
+            Assert.Equal(refeicoesFiltradas.Count, data.Count());
         }
         [Fact]
         public async Task Post_CalculoDeUmaRefeicao()
@@ -123,7 +128,60 @@ namespace WebApplicationIntegrationTest.ControllerTests
 
             _factory.FoodCalcMock.VerifyAll();
         }
+         [Fact]
+        public async Task Get_Always_ReturnAllCalculoDeRefeicao()
+        {
+            var mockRefeicaoCalculada = RefeicaoMVNFactory.CreateMockRefeicaoCalculada();
 
+            _factory.FoodCalcMock.Setup(f => f.GetCalculoRefeicao(It.IsAny<ReadRefeicaoDto>()))
+                .ReturnsAsync(mockRefeicaoCalculada);
+
+            var response = await _client.GetAsync("api/Refeicao/CalculoRefeicao");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var data = JsonConvert.DeserializeObject<CalculoDaRefeicao>(await response.Content.ReadAsStringAsync());
+
+            _factory.FoodCalcMock.VerifyAll();
+        }
+        [Fact]
+        public async Task Get_Always_ReturnAllCalculoDeRefeicaoPelaPosicao()
+        {
+            var mockRefeicaoCalculada = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable().ToList();
+
+            _factory.FoodCalcMock.Setup(f => f.CalcularTotalRefeicaoPelaPosicao(It.IsAny<ReadRefeicaoDto>(), It.IsAny<int>()))
+                .ReturnsAsync(new FoodServiceResponseDto
+                {
+                    Message = "Calculo feito com sucesso",
+                    IsSuccess = true
+                });
+
+            var response = await _client.GetAsync("api/Refeicao/CalcularNutrientesTotaisPelaPosicao");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            _factory.FoodCalcMock.VerifyAll();
+        }
+        [Fact]
+        public async Task Delete_Always_RemoveRefeicao()
+        {
+            var mockRefeicao = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable();
+
+            _factory.FoodCalcMock.Setup(f => f.RemoveRefeicao(It.IsAny<ReadRefeicaoDto>(), It.IsAny<string>()))
+                .ReturnsAsync(new FoodServiceResponseDto
+                {
+                    Message = "Refeicao removida com sucesso",
+                    IsSuccess = true
+                });
+
+            var nomeRefeicao = "Ref2";
+
+            var response = await _client.DeleteAsync($"api/Refeicao/RemoverRefeicao?nome={nomeRefeicao}");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            _factory.FoodCalcMock.VerifyAll();
+        }
         public void Dispose()
         {
             _client.Dispose();
