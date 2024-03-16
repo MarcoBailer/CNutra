@@ -31,31 +31,52 @@ namespace Nutricao.Core.Service
             {
                 try
                 {
-                    var informacao = await _foodInformation.FoodDetailSearchByName(nome);
-                    var refeicao = new RefeicaoMVN
+                    if(nome.Contains("/"))
                     {
-                        Nome = informacao.Food.Nome,
-                        Carboidratos = informacao.Food.Carboidratos,
-                        Proteinas = informacao.Food.Proteinas,
-                        Lipidios = informacao.Food.Lipidios,
-                        Calorias = informacao.Food.Calorias,
-                        Fibra = informacao.Food.Fibra_Alimentar,
-                        Dia = refeicaoDto.Dia,
-                        Mes = refeicaoDto.Mes,
-                        Ano = refeicaoDto.Ano,
-                        IsMatinal = refeicaoDto.IsMatinal,
-                        IsVespertina = refeicaoDto.IsVespertina,
-                        IsNoturna = refeicaoDto.IsNoturna,
-                        Posicao = refeicaoDto.Posicao
-                    };
+                        var nomeSplited = nome.Split('/')[0];
 
-                    MainCallException.ValidarPeriodo(refeicaoDto.Dia, refeicaoDto.Mes, refeicaoDto.IsMatinal, refeicaoDto.IsVespertina, refeicaoDto.IsNoturna);
+                        var informacao = await _foodInformation.FoodDetailSearchByName(nomeSplited);
 
-                    if (refeicao.IsMatinal || refeicao.IsVespertina || refeicao.IsNoturna)
-                    {
-                        _context.RefeicaoMVN.Add(refeicao);
-                        await _context.SaveChangesAsync();
+                        string pesoString = nome.Split('/')[1];
+
+                        var peso = int.Parse(pesoString);
+
+                        var refeicao = new RefeicaoMVN
+                        {
+                            Nome = informacao.Food.Nome,
+                            Carboidratos = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Carboidratos),
+                            Proteinas = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Proteinas),
+                            Lipidios = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Lipidios),
+                            Calorias = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Calorias),
+                            Fibra = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Fibra_Alimentar),
+                            Peso = peso,
+                            Dia = refeicaoDto.Dia,
+                            Mes = refeicaoDto.Mes,
+                            Ano = refeicaoDto.Ano,
+                            IsMatinal = refeicaoDto.IsMatinal,
+                            IsVespertina = refeicaoDto.IsVespertina,
+                            IsNoturna = refeicaoDto.IsNoturna,
+                            Posicao = refeicaoDto.Posicao
+                        };
+
+                        MainCallException.ValidarPeriodo(refeicaoDto.Dia, refeicaoDto.Mes, refeicaoDto.IsMatinal, refeicaoDto.IsVespertina, refeicaoDto.IsNoturna);
+
+                        if (refeicao.IsMatinal || refeicao.IsVespertina || refeicao.IsNoturna)
+                        {
+                            _context.RefeicaoMVN.Add(refeicao);
+                            await _context.SaveChangesAsync();
+                        }
                     }
+                    else
+                    {
+                        return new FoodServiceResponseDto
+                        {
+                            IsSuccess = false,
+                            StatusCode = 400,
+                            Message = "A quantidade de comida ingerida deve acompanhar o nome, separado por uma barra( / )"
+                        };
+                    }
+
                 }
                 catch (InvalidPeriodException ex)
                 {
@@ -172,7 +193,7 @@ namespace Nutricao.Core.Service
             try
             {
                 var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano).ToListAsync();
-         
+
                 return query;
             }
             catch(Exception ex)
@@ -330,7 +351,7 @@ namespace Nutricao.Core.Service
                 var query = await GetRefeicao(refeicao);
                 var result = query.Find(x => x.Nome == updt.Nome);
 
-                if (result == null)
+                if (result != null)
                 {                    
                     result.Dia = updt.Dia;
                     result.Mes = updt.Mes;

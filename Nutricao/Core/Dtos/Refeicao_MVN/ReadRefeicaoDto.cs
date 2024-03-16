@@ -9,6 +9,7 @@
         public double Lipidios { get; set; }
         public double Fibra { get; set; }
         public double Calorias { get; set; }
+        public int Peso { get; set; }
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
