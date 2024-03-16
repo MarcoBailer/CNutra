@@ -31,31 +31,52 @@ namespace Nutricao.Core.Service
             {
                 try
                 {
-                    var informacao = await _foodInformation.FoodDetailSearchByName(nome);
-                    var refeicao = new RefeicaoMVN
+                    if(nome.Contains("/"))
                     {
-                        Nome = informacao.Food.Nome,
-                        Carboidratos = informacao.Food.Carboidratos,
-                        Proteinas = informacao.Food.Proteinas,
-                        Lipidios = informacao.Food.Lipidios,
-                        Calorias = informacao.Food.Calorias,
-                        Fibra = informacao.Food.Fibra_Alimentar,
-                        Dia = refeicaoDto.Dia,
-                        Mes = refeicaoDto.Mes,
-                        Ano = refeicaoDto.Ano,
-                        IsMatinal = refeicaoDto.IsMatinal,
-                        IsVespertina = refeicaoDto.IsVespertina,
-                        IsNoturna = refeicaoDto.IsNoturna,
-                        Posicao = refeicaoDto.Posicao
-                    };
+                        var nomeSplited = nome.Split('/')[0];
 
-                    MainCallException.ValidarPeriodo(refeicaoDto.Dia, refeicaoDto.Mes, refeicaoDto.IsMatinal, refeicaoDto.IsVespertina, refeicaoDto.IsNoturna);
+                        var informacao = await _foodInformation.FoodDetailSearchByName(nomeSplited);
 
-                    if (refeicao.IsMatinal || refeicao.IsVespertina || refeicao.IsNoturna)
-                    {
-                        _context.RefeicaoMVN.Add(refeicao);
-                        await _context.SaveChangesAsync();
+                        string pesoString = nome.Split('/')[1];
+
+                        var peso = int.Parse(pesoString);
+
+                        var refeicao = new RefeicaoMVN
+                        {
+                            Nome = informacao.Food.Nome,
+                            Carboidratos = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Carboidratos),
+                            Proteinas = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Proteinas),
+                            Lipidios = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Lipidios),
+                            Calorias = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Calorias),
+                            Fibra = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Fibra_Alimentar),
+                            Peso = peso,
+                            Dia = refeicaoDto.Dia,
+                            Mes = refeicaoDto.Mes,
+                            Ano = refeicaoDto.Ano,
+                            IsMatinal = refeicaoDto.IsMatinal,
+                            IsVespertina = refeicaoDto.IsVespertina,
+                            IsNoturna = refeicaoDto.IsNoturna,
+                            Posicao = refeicaoDto.Posicao
+                        };
+
+                        MainCallException.ValidarPeriodo(refeicaoDto.Dia, refeicaoDto.Mes, refeicaoDto.IsMatinal, refeicaoDto.IsVespertina, refeicaoDto.IsNoturna);
+
+                        if (refeicao.IsMatinal || refeicao.IsVespertina || refeicao.IsNoturna)
+                        {
+                            _context.RefeicaoMVN.Add(refeicao);
+                            await _context.SaveChangesAsync();
+                        }
                     }
+                    else
+                    {
+                        return new FoodServiceResponseDto
+                        {
+                            IsSuccess = false,
+                            StatusCode = 400,
+                            Message = "A quantidade de comida ingerida deve acompanhar o nome, separado por uma barra( / )"
+                        };
+                    }
+
                 }
                 catch (InvalidPeriodException ex)
                 {
@@ -79,26 +100,38 @@ namespace Nutricao.Core.Service
             try
             {
                 var ListaDeRefeicao = await GetRefeicao(refeicaoDto);
-
-                var total = new CalculoDaRefeicao
+                
+                if(ListaDeRefeicao != null)
                 {
-                    TotalCarboidratos = RefeicaoMVN.CalcularTotalCarboidratos(ListaDeRefeicao),
-                    TotalProteinas = RefeicaoMVN.CalcularTotalProteinas(ListaDeRefeicao),
-                    TotalGorduras = RefeicaoMVN.CalcularTotalLipidios(ListaDeRefeicao),
-                    TotalCalorias = RefeicaoMVN.CalcularTotalCalorias(ListaDeRefeicao),
-                    TotalFibras = RefeicaoMVN.CalcularTotalFibras(ListaDeRefeicao),
-                    Dia = refeicaoDto.Dia,
-                    Mes = refeicaoDto.Mes,
-                    Ano = refeicaoDto.Ano
-                };
-                _context.Refeicao.Add(total);
-                await _context.SaveChangesAsync();
-                return new FoodServiceResponseDto
+                    var total = new CalculoDaRefeicao
+                    {
+                        TotalCarboidratos = RefeicaoMVN.CalcularTotalCarboidratos(ListaDeRefeicao),
+                        TotalProteinas = RefeicaoMVN.CalcularTotalProteinas(ListaDeRefeicao),
+                        TotalGorduras = RefeicaoMVN.CalcularTotalLipidios(ListaDeRefeicao),
+                        TotalCalorias = RefeicaoMVN.CalcularTotalCalorias(ListaDeRefeicao),
+                        TotalFibras = RefeicaoMVN.CalcularTotalFibras(ListaDeRefeicao),
+                        Dia = refeicaoDto.Dia,
+                        Mes = refeicaoDto.Mes,
+                        Ano = refeicaoDto.Ano
+                    };
+                    _context.Refeicao.Add(total);
+                    await _context.SaveChangesAsync();
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = true,
+                        StatusCode = 201,
+                        Message = $"Calculo nutricional feito com sucesso para o dia {refeicaoDto.Dia}/{refeicaoDto.Mes}/{refeicaoDto.Ano}"
+                    };
+                }
+                else
                 {
-                    IsSuccess = true,
-                    StatusCode = 201,
-                    Message = $"Calculo nutricional feito com sucesso para o dia {refeicaoDto.Dia}/{refeicaoDto.Mes}/{refeicaoDto.Ano}"
-                };
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        StatusCode = 404,
+                        Message = $"Nenhuma refeição encontrada para o dia {refeicaoDto.Dia}/{refeicaoDto.Mes}/{refeicaoDto.Ano}"
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -116,22 +149,34 @@ namespace Nutricao.Core.Service
             {
                 var query = await GetRefeicaoByPlace(refeicao, lugar);
 
-                var refe = new Nutrients
+                if(query != null)
                 {
-                    Nome = $"Total refei {lugar}",
-                    Carboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query),
-                    Proteinas = RefeicaoMVN.CalcularTotalProteinas(query),
-                    Calorias = RefeicaoMVN.CalcularTotalCalorias(query),
-                    Lipidios = RefeicaoMVN.CalcularTotalLipidios(query),
-                    Fibra_Alimentar = RefeicaoMVN.CalcularTotalFibras(query),
-                };
-                return new FoodServiceResponseDto
+                    var refe = new Nutrients
+                    {
+                        Nome = $"Total refei {lugar}",
+                        Carboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query),
+                        Proteinas = RefeicaoMVN.CalcularTotalProteinas(query),
+                        Calorias = RefeicaoMVN.CalcularTotalCalorias(query),
+                        Lipidios = RefeicaoMVN.CalcularTotalLipidios(query),
+                        Fibra_Alimentar = RefeicaoMVN.CalcularTotalFibras(query),
+                    };
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = true,
+                        StatusCode = 200,
+                        Message = $"Sua {lugar}° refeição somou esses nutrientes",
+                        Food = refe
+                    };
+                }
+                else
                 {
-                    IsSuccess = true,
-                    StatusCode = 200,
-                    Message = $"Sua {lugar}° refeição somou esses nutrientes",
-                    Food = refe
-                };
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        StatusCode = 404,
+                        Message = $"Nenhuma refeição encontrada para o lugar {lugar}, para este dia {refeicao.Dia}/{refeicao.Mes}/{refeicao.Ano}"
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -148,7 +193,7 @@ namespace Nutricao.Core.Service
             try
             {
                 var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano).ToListAsync();
-         
+
                 return query;
             }
             catch(Exception ex)
@@ -192,24 +237,37 @@ namespace Nutricao.Core.Service
                 var query = await GetRefeicao(refeicaoQr);
                 var result = query.Find(x => x.Nome == nome);
 
-                _context.RefeicaoMVN.Remove(result);
-                await _context.SaveChangesAsync();
-
-                var calc = await GetCalculoRefeicao(refeicaoQr);
-
-                if (calc != null)
-                {
-                    _context.Refeicao.Remove(calc);
+                if(result != null)
+                {                    
+                    _context.RefeicaoMVN.Remove(result);
                     await _context.SaveChangesAsync();
-                    await CalculoTotal(refeicaoQr);
+
+                    var calc = await GetCalculoRefeicao(refeicaoQr);
+
+                    if (calc != null)
+                    {
+                        _context.Refeicao.Remove(calc);
+                        await _context.SaveChangesAsync();
+                        await CalculoTotal(refeicaoQr);
+                    }
+
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = true,
+                        StatusCode = 200,
+                        Message = $"Refeição removida com sucesso. Recalculo dos nutrientes feito com sucesso."
+                    };
+                }
+                else
+                {
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        StatusCode = 404,
+                        Message = $"Refeição com nome '{nome}' não encontrada para remoção."
+                    };
                 }
 
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = true,
-                    StatusCode = 200,
-                    Message = $"Refeição removida com sucesso. Recalculo dos nutrientes feito com sucesso."
-                };
             }catch(Exception ex)
             {
                 return new FoodServiceResponseDto
@@ -220,13 +278,53 @@ namespace Nutricao.Core.Service
                 };
             }
         }
-        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] ReadRefeicaoDto refeicao, string nome, string nomeUpdt)
+        public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] RefeicaoQuery refeicao, string nome, string nomeUpdt)
         {
             try
             {
                 var query = await GetRefeicao(refeicao);
                 var result = query.Find(x => x.Nome == nome);
-                if (refeicaoToUpdate == null)
+                if (result != null)
+                {
+                    var resultAtt = await _foodInformation.FoodDetailSearchByName(nomeUpdt);
+
+                    if (resultAtt == null)
+                    {
+                        return new FoodServiceResponseDto
+                        {
+                            IsSuccess = false,
+                            StatusCode = 404,
+                            Message = $"Alimento com nome '{nomeUpdt}' não encontrado."
+                        };
+                    }
+
+                    result.Nome = resultAtt.Food.Nome;
+                    result.Carboidratos = resultAtt.Food.Carboidratos;
+                    result.Proteinas = resultAtt.Food.Proteinas;
+                    result.Lipidios = resultAtt.Food.Lipidios;
+                    result.Calorias = resultAtt.Food.Calorias;
+                    result.Fibra = resultAtt.Food.Fibra_Alimentar;
+
+                    _context.RefeicaoMVN.Update(result);
+                    await _context.SaveChangesAsync();
+
+                    var calc = await GetCalculoRefeicao(refeicao);
+
+                    if(calc != null)
+                    {
+                        _context.Refeicao.Remove(calc);
+                        await _context.SaveChangesAsync();
+                        var newCalc = await CalculoTotal(refeicao);
+                    }
+
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = true,
+                        StatusCode = 200,
+                        Message = $"Refeição atualizada com sucesso. {nome} atualizado para {nomeUpdt}. Recalculo dos nutrientes feito com sucesso."
+                    };
+                }
+                else
                 {
                     return new FoodServiceResponseDto
                     {
@@ -235,29 +333,6 @@ namespace Nutricao.Core.Service
                         Message = $"Refeição com nome '{nome}' não encontrada para atualização."
                     };
                 }
-                var resultAtt = await _foodInformation.FoodDetailSearchByName(nomeUpdt);
-
-                result.Nome = resultAtt.Food.Nome;
-                result.Carboidratos = resultAtt.Food.Carboidratos;
-                result.Proteinas = resultAtt.Food.Proteinas;
-                result.Lipidios = resultAtt.Food.Lipidios;
-                result.Calorias = resultAtt.Food.Calorias;
-                result.Fibra = resultAtt.Food.Fibra_Alimentar;
-
-                _context.RefeicaoMVN.Update(result);
-                await _context.SaveChangesAsync();
-
-                var calc = await GetCalculoRefeicao(refeicao);
-                _context.Refeicao.Remove(calc);
-                await _context.SaveChangesAsync();
-                var newCalc = await CalculoTotal(refeicao);
-
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = true,
-                    StatusCode = 200,
-                    Message = $"Refeição atualizada com sucesso. {nome} atualizado para {nomeUpdt}. Recalculo dos nutrientes feito com sucesso."
-                };
             }
             catch (Exception ex)
             {
@@ -276,25 +351,37 @@ namespace Nutricao.Core.Service
                 var query = await GetRefeicao(refeicao);
                 var result = query.Find(x => x.Nome == updt.Nome);
 
-                result.Dia = updt.Dia;
-                result.Mes = updt.Mes;
-                result.Ano = updt.Ano;
+                if (result != null)
+                {                    
+                    result.Dia = updt.Dia;
+                    result.Mes = updt.Mes;
+                    result.Ano = updt.Ano;
 
-                _context.RefeicaoMVN.Update(result);
-                await _context.SaveChangesAsync();
+                    _context.RefeicaoMVN.Update(result);
+                    await _context.SaveChangesAsync();
 
-                var calc = await GetCalculoRefeicao(refeicao);
-                _context.Refeicao.Remove(calc);
+                    var calc = await GetCalculoRefeicao(refeicao);
+                    _context.Refeicao.Remove(calc);
 
-                await _context.SaveChangesAsync();
-                var newCalc = await CalculoTotal(refeicao);
+                    await _context.SaveChangesAsync();
+                    var newCalc = await CalculoTotal(refeicao);
 
-                return new FoodServiceResponseDto
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = true,
+                        StatusCode = 200,
+                        Message = $"Data da refeição atualizada com sucesso. De {refeicao.Dia} para {updt.Dia}. Faça o calculo nutricional para o dia {updt.Dia}"
+                    };
+                }
+                else
                 {
-                    IsSuccess = true,
-                    StatusCode = 200,
-                    Message = $"Data da refeição atualizada com sucesso. De {refeicao.Dia} para {updt.Dia}. Faça o calculo nutricional para o dia {updt.Dia}"
-                };
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        StatusCode = 404,
+                        Message = $"Refeição com nome '{updt.Nome}' não encontrada para atualização."
+                    };
+                }
             }
             catch (Exception ex)
             {

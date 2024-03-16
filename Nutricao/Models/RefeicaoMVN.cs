@@ -9,6 +9,7 @@
         public double Calorias { get; set; }
         public double Lipidios { get; set; }
         public double Fibra { get; set; }
+        public int Peso { get; set; }
         public int Dia { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
@@ -37,5 +38,9 @@
         {
             return refeicaoMVN.Sum(r => r.Fibra);
         }
+        public static double CalcularQuantidadePeloPeso(double peso, double quantidade)
+        {
+            return (peso * quantidade) / 100;
+        }   
     }
 }

@@ -3,6 +3,7 @@ using Moq;
 using Newtonsoft.Json;
 using Nutricao.Core.Dtos;
 using Nutricao.Core.Dtos.Refeicao;
+using Nutricao.Core.Dtos.Refeicao_MVN;
 using Nutricao.Core.OtherObjects;
 using Nutricao.Models;
 using RefeicaoApplicationTesting.Integration.Factory;
@@ -39,7 +40,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
                 .Where(r => r.Dia == mockRead.Dia && r.Mes == mockRead.Mes && r.Ano == mockRead.Ano)
                 .ToList();
 
-            _factory.FoodCalcMock.Setup(f => f.GetRefeicao(It.IsAny<ReadRefeicaoDto>()))
+            _factory.FoodCalcMock.Setup(f => f.GetRefeicao(It.IsAny<RefeicaoQuery>()))
                 .ReturnsAsync(refeicoesFiltradas);
 
             var response = await _client.GetAsync($"api/Refeicao/refeicao?Dia={mockRead.Dia}&Mes={mockRead.Mes}&Ano={mockRead.Ano}");
@@ -69,7 +70,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
                 .ToList();
 
 
-            _factory.FoodCalcMock.Setup(f => f.GetRefeicaoByPlace(It.IsAny<ReadRefeicaoDto>(), It.IsAny<int>()))
+            _factory.FoodCalcMock.Setup(f => f.GetRefeicaoByPlace(It.IsAny<RefeicaoQuery>(), It.IsAny<int>()))
                 .ReturnsAsync(refeicoesFiltradas.ToList());
 
             var response = await _client.GetAsync($"api/Refeicao/refeicaoLugar?Dia={mockRead.Dia}&Mes={mockRead.Mes}&Ano={mockRead.Ano}&lugar={posicao}");
@@ -97,7 +98,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
                 Ano = 2024
             };
 
-            _factory.FoodCalcMock.Setup(f => f.CalculoTotal(It.IsAny<ReadRefeicaoDto>()))
+            _factory.FoodCalcMock.Setup(f => f.CalculoTotal(It.IsAny<RefeicaoQuery>()))
                 .ReturnsAsync(new FoodServiceResponseDto
                 {
                     Message = "Calculo feito com sucesso",
@@ -115,7 +116,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
         {
             var newMockRefeicoes = RefeicaoMVNFactory.CreateMockRefeicao();
 
-            _factory.FoodCalcMock.Setup(f => f.CadastrarVariasRef(It.IsAny<CreateRefeicaoDto>()))
+            _factory.FoodCalcMock.Setup(f => f.CadastrarVariasRef(It.IsAny<RefeicaoMVN>()))
                 .ReturnsAsync(new FoodServiceResponseDto
                 {
                     Message = "Refeicao cadastrada com sucesso",
@@ -133,7 +134,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
         {
             var mockRefeicaoCalculada = RefeicaoMVNFactory.CreateMockRefeicaoCalculada();
 
-            _factory.FoodCalcMock.Setup(f => f.GetCalculoRefeicao(It.IsAny<ReadRefeicaoDto>()))
+            _factory.FoodCalcMock.Setup(f => f.GetCalculoRefeicao(It.IsAny<RefeicaoQuery>()))
                 .ReturnsAsync(mockRefeicaoCalculada);
 
             var response = await _client.GetAsync("api/Refeicao/CalculoRefeicao");
@@ -149,7 +150,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
         {
             var mockRefeicaoCalculada = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable().ToList();
 
-            _factory.FoodCalcMock.Setup(f => f.CalcularTotalRefeicaoPelaPosicao(It.IsAny<ReadRefeicaoDto>(), It.IsAny<int>()))
+            _factory.FoodCalcMock.Setup(f => f.CalcularTotalRefeicaoPelaPosicao(It.IsAny<RefeicaoQuery>(), It.IsAny<int>()))
                 .ReturnsAsync(new FoodServiceResponseDto
                 {
                     Message = "Calculo feito com sucesso",
@@ -167,7 +168,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
         {
             var mockRefeicao = RefeicaoMVNFactory.CreateMockRefeicoes().AsQueryable();
 
-            _factory.FoodCalcMock.Setup(f => f.RemoveRefeicao(It.IsAny<ReadRefeicaoDto>(), It.IsAny<string>()))
+            _factory.FoodCalcMock.Setup(f => f.RemoveRefeicao(It.IsAny<RefeicaoQuery>(), It.IsAny<string>()))
                 .ReturnsAsync(new FoodServiceResponseDto
                 {
                     Message = "Refeicao removida com sucesso",
