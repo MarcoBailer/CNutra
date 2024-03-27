@@ -42,6 +42,12 @@ namespace Nutricao.Controllers
             var result = await _foodCalc.CalcularTotalRefeicaoPelaPosicao(refeicao, lugar);
             return result;
         }
+        [HttpGet("CalucularNutrientesTotaisPeloTurno")]
+        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPeloTurno([FromQuery] RefeicaoQuery refeicao, bool isMatinal, bool isVespertina, bool isNoturna)
+        {
+            var result = await _foodCalc.CalcularTotalRefeicaoPeloTurno(refeicao, isMatinal, isVespertina, isNoturna);
+            return result;
+        }
         [HttpGet("CalculoRefeicao")]
         public async Task<ReadCalculoDto> GetCalculoRefeicao([FromQuery] RefeicaoQuery refeicao)
         {
@@ -66,6 +72,15 @@ namespace Nutricao.Controllers
             var result = await _foodCalc.GetRefeicaoByPlace(refeicao, lugar);
 
             List<ReadRefeicaoDto> refeicaoMVN = _mapper.Map<List<ReadRefeicaoDto>>(result);
+
+            return refeicaoMVN;
+        }
+        [HttpGet("refeicaoTurno")]
+        public async Task<List<RefeicaoMVN>> GetRefeicaoPorTurno([FromQuery] RefeicaoQuery refeicaoQr, bool isMatinal, bool isVespertina, bool isNoturna)
+        {
+            var result = await _foodCalc.GetCalculoRefeicaoTurno(refeicaoQr, isMatinal, isVespertina, isNoturna);
+
+            List<RefeicaoMVN> refeicaoMVN = _mapper.Map<List<RefeicaoMVN>>(result);
 
             return refeicaoMVN;
         }

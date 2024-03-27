@@ -1,7 +1,11 @@
-﻿namespace Nutricao.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Nutricao.Models
 {
     public class RefeicaoMVN
     {
+        [Key]
+        [Required]
         public int Id { get; set; }
         public string Nome { get; set; }
         public double Carboidratos { get; set; }

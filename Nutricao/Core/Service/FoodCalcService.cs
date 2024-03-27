@@ -188,6 +188,51 @@ namespace Nutricao.Core.Service
                 };
             }
         }
+
+        public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPeloTurno([FromQuery] RefeicaoQuery refeicao, bool mat, bool vesp, bool not)
+        {
+            try
+            {
+                var query = await GetCalculoRefeicaoTurno(refeicao, mat, vesp, not);
+
+                if (query != null)
+                {
+                    var refe = new Nutrients
+                    {
+                        Nome = $"Total refeicao",
+                        Carboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query),
+                        Proteinas = RefeicaoMVN.CalcularTotalProteinas(query),
+                        Calorias = RefeicaoMVN.CalcularTotalCalorias(query),
+                        Lipidios = RefeicaoMVN.CalcularTotalLipidios(query),
+                        Fibra_Alimentar = RefeicaoMVN.CalcularTotalFibras(query),
+                    };
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = true,
+                        StatusCode = 200,
+                        Food = refe
+                    };
+                }
+                else
+                {
+                    return new FoodServiceResponseDto
+                    {
+                        IsSuccess = false,
+                        StatusCode = 404,
+                        Message = $"Nenhuma refeição encontrada , para este dia {refeicao.Dia}/{refeicao.Mes}/{refeicao.Ano}"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new FoodServiceResponseDto
+                {
+                    IsSuccess = false,
+                    StatusCode = 500,
+                    Message = $"Erro ao calcular o total da refeição: {ex.Message}"
+                };
+            }
+        }
         public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] RefeicaoQuery refeicaoQr)
         {
             try
@@ -221,6 +266,20 @@ namespace Nutricao.Core.Service
             try
             {
                 var query = await _context.Refeicao.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano).FirstOrDefaultAsync();
+
+                return query;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<List<RefeicaoMVN>> GetCalculoRefeicaoTurno([FromQuery] RefeicaoQuery refeicaoQr, bool isMatinal, bool isVespertina, bool isNoturna)
+        {
+            try
+            {
+                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano && (x.IsMatinal == isMatinal || x.IsVespertina == isVespertina|| x.IsNoturna == isNoturna)).ToListAsync();
 
                 return query;
             }
