@@ -36,13 +36,13 @@ namespace Nutricao.Controllers
             var result = await _foodCalc.CalculoTotal(refeicao);
             return result;
         }
-        [HttpGet("CalcularNutrientesTotaisPelaPosicao")]
+        [HttpPost("CalcularNutrientesTotaisPelaPosicao")]
         public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] RefeicaoQuery refeicao, int lugar)
         {
             var result = await _foodCalc.CalcularTotalRefeicaoPelaPosicao(refeicao, lugar);
             return result;
         }
-        [HttpGet("CalucularNutrientesTotaisPeloTurno")]
+        [HttpPost("CalucularNutrientesTotaisPeloTurno")]
         public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPeloTurno([FromQuery] RefeicaoQuery refeicao, bool isMatinal, bool isVespertina, bool isNoturna)
         {
             var result = await _foodCalc.CalcularTotalRefeicaoPeloTurno(refeicao, isMatinal, isVespertina, isNoturna);
@@ -67,9 +67,9 @@ namespace Nutricao.Controllers
             return refeicaoMVN;
         }
         [HttpGet("refeicaoLugar")]
-        public async Task<List<ReadRefeicaoDto>> GetRefeicaoByPlace([FromQuery] RefeicaoQuery refeicao, int lugar)
+        public async Task<List<ReadRefeicaoDto>> GetRefeicaoPorPosicao([FromQuery] RefeicaoQuery refeicao, int lugar)
         {
-            var result = await _foodCalc.GetRefeicaoByPlace(refeicao, lugar);
+            var result = await _foodCalc.GetRefeicaoPorPosicao(refeicao, lugar);
 
             List<ReadRefeicaoDto> refeicaoMVN = _mapper.Map<List<ReadRefeicaoDto>>(result);
 
@@ -78,7 +78,7 @@ namespace Nutricao.Controllers
         [HttpGet("refeicaoTurno")]
         public async Task<List<RefeicaoMVN>> GetRefeicaoPorTurno([FromQuery] RefeicaoQuery refeicaoQr, bool isMatinal, bool isVespertina, bool isNoturna)
         {
-            var result = await _foodCalc.GetCalculoRefeicaoTurno(refeicaoQr, isMatinal, isVespertina, isNoturna);
+            var result = await _foodCalc.GetRefeicaoPorTurno(refeicaoQr, isMatinal, isVespertina, isNoturna);
 
             List<RefeicaoMVN> refeicaoMVN = _mapper.Map<List<RefeicaoMVN>>(result);
 
