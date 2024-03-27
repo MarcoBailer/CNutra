@@ -11,5 +11,7 @@ namespace Nutricao.Core.Dtos.Context
 
         public DbSet<RefeicaoMVN> RefeicaoMVN { get; set; }
         public DbSet<CalculoDaRefeicao> Refeicao { get; set; }
+        public DbSet<CalculoDaRefeicaoPorPosicao> RefeicaoPosicao { get; set; }
+        public DbSet<CalculoDaRefeicaoPorTurno> RefeicaoTurno { get; set; }
     }
 }

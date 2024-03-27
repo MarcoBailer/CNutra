@@ -32,30 +32,16 @@ namespace Nutricao.Core.Service
                         Nome = foodData.Nome,
                         Grupo = foodData.Grupo,
                     });
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = true,
-                        StatusCode = 200,
-                        Message = "Informações encontradas.",
-                        Resume = result,
-                    };
+                    return FoodServiceResponseDto.Ok(result);
                 }
                 else
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        Message = $"Informações sobre a categoria {foodCategory} não encontradas.",
-                    };
+                    return FoodServiceResponseDto.NotFound($"Não foi possível encontrar informações sobre a categoria {foodCategory}.");
                 }
             }
             catch (Exception ex)
             {
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = false,
-                    Message = $"Erro ao buscar informações sobre a categoria: {ex}.",
-                };
+                return FoodServiceResponseDto.InternalServerError($"Erro ao buscar informações sobre a categoria {foodCategory}: {ex}.");
             }
         }
         public async Task<FoodServiceResponseDto> FoodDetailSearchByName(string foodName)
@@ -64,7 +50,7 @@ namespace Nutricao.Core.Service
             {
                 var foodList = await _apiService.GetFoodByName(foodName);
 
-                if (foodList != null && foodList.Any())
+                if (foodList != null)
                 {
                     var result = foodList.Select(foodData => new Nutrients
                     {
@@ -78,27 +64,15 @@ namespace Nutricao.Core.Service
                         Vitaminas = foodData.Vitaminas,
                         Minerais = foodData.Minerais,
                     });
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = true,
-                        Food = result.FirstOrDefault(),
-                    };
+                    return FoodServiceResponseDto.Ok(result);
                 }
                 else
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        Message = $"Informações sobre o {foodName} não encontradas.",
-                    };
+                    return FoodServiceResponseDto.NotFound($"Informações sobre {foodName} não encontradas.");
                 }
             }catch(Exception ex)
             {
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = false,
-                    Message = $"Erro ao buscar informações: {ex}.",
-                };
+                return FoodServiceResponseDto.InternalServerError($"Erro ao buscar informações sobre {foodName}: {ex}.");
             }
         }
     }

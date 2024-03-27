@@ -1,18 +1,16 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nutricao.Core.Dtos;
 using Nutricao.Core.Dtos.Context;
 using Nutricao.Core.Dtos.Refeicao_MVN;
 using Nutricao.Core.Interfaces;
-using Nutricao.Core.OtherObjects;
 using Nutricao.Exceptions;
 using Nutricao.Models;
 
 namespace Nutricao.Core.Service
 {
-    public class FoodCalcService : IFoodCalc
+    public class FoodCalcService : IFoodCalc 
     {
         private readonly RefeicaoContext _context;
         private readonly IFoodInfomation _foodInformation;
@@ -69,31 +67,16 @@ namespace Nutricao.Core.Service
                     }
                     else
                     {
-                        return new FoodServiceResponseDto
-                        {
-                            IsSuccess = false,
-                            StatusCode = 400,
-                            Message = "A quantidade de comida ingerida deve acompanhar o nome, separado por uma barra( / )"
-                        };
+                        return FoodServiceResponseDto.BadRequest("É necessário colocar a quantidade após o nome do alimento => /Quantidade");
                     }
 
                 }
                 catch (InvalidPeriodException ex)
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        StatusCode = 500,
-                        Message = $"Erro ao cadastrar refeição {ex.Message}"
-                    };
+                    return FoodServiceResponseDto.BadRequest(ex.Message);
                 }
             }
-            return new FoodServiceResponseDto
-            {
-                IsSuccess = true,
-                StatusCode = 201,
-                Message = "Operacao realizada com sucesso"
-            };
+            return FoodServiceResponseDto.Created("Refeição cadastrada com sucesso.");
         }
         public async Task<FoodServiceResponseDto> CalculoTotal([FromQuery] RefeicaoQuery refeicaoDto)
         {
@@ -116,138 +99,136 @@ namespace Nutricao.Core.Service
                     };
                     _context.Refeicao.Add(total);
                     await _context.SaveChangesAsync();
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = true,
-                        StatusCode = 201,
-                        Message = $"Calculo nutricional feito com sucesso para o dia {refeicaoDto.Dia}/{refeicaoDto.Mes}/{refeicaoDto.Ano}"
-                    };
+
+                    return FoodServiceResponseDto.Created($"Calculo nutricional feito com sucesso para o dia {refeicaoDto.Dia}/{refeicaoDto.Mes}/{refeicaoDto.Ano}");
                 }
                 else
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        StatusCode = 404,
-                        Message = $"Nenhuma refeição encontrada para o dia {refeicaoDto.Dia}/{refeicaoDto.Mes}/{refeicaoDto.Ano}"
-                    };
+                    return FoodServiceResponseDto.NotFound($"Nenhuma refeição encontrada para o dia {refeicaoDto.Dia}/{refeicaoDto.Mes}/{refeicaoDto.Ano}");
                 }
             }
             catch (Exception ex)
             {
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = false,
-                    StatusCode = 500,
-                    Message = $"Erro ao calcular o total da refeição: {ex.Message}"
-                };
+                return FoodServiceResponseDto.InternalServerError($"Erro ao calcular o total da refeição: {ex.Message}");
             }
         }
         public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPelaPosicao([FromQuery] RefeicaoQuery refeicao, int lugar)
         {
             try
             {
-                var query = await GetRefeicaoByPlace(refeicao, lugar);
+                var query = await GetRefeicaoPorPosicao(refeicao, lugar);
 
                 if(query != null)
                 {
-                    var refe = new Nutrients
+                    var refe = new CalculoDaRefeicaoPorPosicao
                     {
-                        Nome = $"Total refei {lugar}",
-                        Carboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query),
-                        Proteinas = RefeicaoMVN.CalcularTotalProteinas(query),
-                        Calorias = RefeicaoMVN.CalcularTotalCalorias(query),
-                        Lipidios = RefeicaoMVN.CalcularTotalLipidios(query),
-                        Fibra_Alimentar = RefeicaoMVN.CalcularTotalFibras(query),
+                        TotalCarboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query),
+                        TotalProteinas = RefeicaoMVN.CalcularTotalProteinas(query),
+                        TotalCalorias = RefeicaoMVN.CalcularTotalCalorias(query),
+                        TotalGorduras = RefeicaoMVN.CalcularTotalLipidios(query),
+                        TotalFibras = RefeicaoMVN.CalcularTotalFibras(query),
+                        Posicao = lugar,
+                        Dia = refeicao.Dia,
+                        Mes = refeicao.Mes,
+                        Ano = refeicao.Ano
                     };
-                    return new FoodServiceResponseDto
+
+                    var calc = await GetCalculoDaRefeicaoPorPosicao(refeicao, lugar);
+                    if(calc != null)
                     {
-                        IsSuccess = true,
-                        StatusCode = 200,
-                        Message = $"Sua {lugar}° refeição somou esses nutrientes",
-                        Food = refe
-                    };
+                        if(calc.TotalGorduras == refe.TotalGorduras && calc.TotalProteinas == refe.TotalProteinas && calc.TotalCarboidratos == refe.TotalCarboidratos && calc.TotalCalorias == refe.TotalCalorias && calc.TotalFibras == refe.TotalFibras)
+                        {
+                            return FoodServiceResponseDto.Ok("Sua refeição não foi alterada, pois o calculo já foi feito.");
+                        }
+                        else
+                        {
+                            _context.RefeicaoPosicao.Add(refe);
+                            await _context.SaveChangesAsync();
+                        }
+                        return FoodServiceResponseDto.Created("Sua refeição foi atualizada com sucesso.");
+                    }
+                    else
+                    {
+                        _context.RefeicaoPosicao.Add(refe);
+                        await _context.SaveChangesAsync();
+
+                        return FoodServiceResponseDto.Created("Calculo nutricional feito com sucesso.");
+                    }
                 }
                 else
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        StatusCode = 404,
-                        Message = $"Nenhuma refeição encontrada para o lugar {lugar}, para este dia {refeicao.Dia}/{refeicao.Mes}/{refeicao.Ano}"
-                    };
+                    return FoodServiceResponseDto.NotFound($"Nenhuma refeição encontrada para o dia {refeicao.Dia}/{refeicao.Mes}/{refeicao.Ano}");
                 }
             }
             catch (Exception ex)
             {
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = false,
-                    StatusCode = 500,
-                    Message = $"Erro ao calcular o total da refeição: {ex.Message}"
-                };
+                return FoodServiceResponseDto.InternalServerError($"Erro ao calcular o total da refeição: {ex.Message}");
             }
         }
-
         public async Task<FoodServiceResponseDto> CalcularTotalRefeicaoPeloTurno([FromQuery] RefeicaoQuery refeicao, bool mat, bool vesp, bool not)
         {
             try
             {
-                var query = await GetCalculoRefeicaoTurno(refeicao, mat, vesp, not);
+                var query = await GetRefeicaoPorTurno(refeicao, mat, vesp, not);
 
                 if (query != null)
                 {
-                    var refe = new Nutrients
+                    var refe = new CalculoDaRefeicaoPorTurno
                     {
-                        Nome = $"Total refeicao",
-                        Carboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query),
-                        Proteinas = RefeicaoMVN.CalcularTotalProteinas(query),
-                        Calorias = RefeicaoMVN.CalcularTotalCalorias(query),
-                        Lipidios = RefeicaoMVN.CalcularTotalLipidios(query),
-                        Fibra_Alimentar = RefeicaoMVN.CalcularTotalFibras(query),
+                        TotalCarboidratos = RefeicaoMVN.CalcularTotalCarboidratos(query),
+                        TotalProteinas = RefeicaoMVN.CalcularTotalProteinas(query),
+                        TotalCalorias = RefeicaoMVN.CalcularTotalCalorias(query),
+                        TotalGorduras = RefeicaoMVN.CalcularTotalLipidios(query),
+                        TotalFibras = RefeicaoMVN.CalcularTotalFibras(query),
                     };
-                    return new FoodServiceResponseDto
+
+                    var calc = await GetCalculoRefeicaoPorTurno(refeicao, mat, vesp, not);
+
+                    if(calc != null)
                     {
-                        IsSuccess = true,
-                        StatusCode = 200,
-                        Food = refe
-                    };
+                        if(calc.TotalCarboidratos == refe.TotalCarboidratos && calc.TotalProteinas == refe.TotalProteinas && calc.TotalCalorias == refe.TotalCalorias && calc.TotalGorduras == refe.TotalGorduras && calc.TotalFibras == refe.TotalFibras)
+                        {
+                            return FoodServiceResponseDto.Ok("Sua refeição não foi alterada, pois o calculo já foi feito.");
+                        }
+                        else
+                        {
+                            _context.RefeicaoTurno.Add(refe);
+                            await _context.SaveChangesAsync();
+                        }
+                        return FoodServiceResponseDto.Created("Sua refeição foi atualizada com sucesso.");
+                    }
+                    else
+                    {
+                        _context.RefeicaoTurno.Add(refe);
+                        await _context.SaveChangesAsync();
+
+                        return FoodServiceResponseDto.Created("Calculo nutricional feito com sucesso.");
+                    }
                 }
                 else
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        StatusCode = 404,
-                        Message = $"Nenhuma refeição encontrada , para este dia {refeicao.Dia}/{refeicao.Mes}/{refeicao.Ano}"
-                    };
+                    return FoodServiceResponseDto.NotFound($"Nenhuma refeição encontrada para o dia {refeicao.Dia}/{refeicao.Mes}/{refeicao.Ano}");
                 }
             }
             catch (Exception ex)
             {
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = false,
-                    StatusCode = 500,
-                    Message = $"Erro ao calcular o total da refeição: {ex.Message}"
-                };
+                return FoodServiceResponseDto.InternalServerError($"Erro ao calcular o total da refeição: {ex.Message}");
             }
         }
         public async Task<List<RefeicaoMVN>> GetRefeicao([FromQuery] RefeicaoQuery refeicaoQr)
         {
             try
             {
-                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano).ToListAsync();
+                var refeicao = await _context.RefeicaoMVN.Where(r => r.Dia == refeicaoQr.Dia && r.Mes == refeicaoQr.Mes && r.Ano == refeicaoQr.Ano).ToListAsync();
 
-                return query;
+                return refeicao;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
                 return null;
             }
         }
-        public async Task<List<RefeicaoMVN>> GetRefeicaoByPlace([FromQuery] RefeicaoQuery refeicaoQr, int lugar)
+        public async Task<List<RefeicaoMVN>> GetRefeicaoPorPosicao([FromQuery] RefeicaoQuery refeicaoQr, int lugar)
         {
             try
             {
@@ -255,9 +236,21 @@ namespace Nutricao.Core.Service
 
                 return query;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<List<RefeicaoMVN>> GetRefeicaoPorTurno([FromQuery] RefeicaoQuery refeicaoQr, bool isMatinal, bool isVespertina, bool isNoturna)
+        {
+            try
+            {
+                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano && (x.IsMatinal == isMatinal || x.IsVespertina == isVespertina || x.IsNoturna == isNoturna)).ToListAsync();
+
+                return query;
+            }
+            catch (Exception ex)
+            {
                 return null;
             }
         }
@@ -269,21 +262,35 @@ namespace Nutricao.Core.Service
 
                 return query;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
                 return null;
             }
         }
-        public async Task<List<RefeicaoMVN>> GetCalculoRefeicaoTurno([FromQuery] RefeicaoQuery refeicaoQr, bool isMatinal, bool isVespertina, bool isNoturna)
+        public async Task<CalculoDaRefeicaoPorTurno> GetCalculoRefeicaoPorTurno([FromQuery] RefeicaoQuery refeicaoQr, bool mat, bool vesp, bool not)
         {
             try
             {
-                var query = await _context.RefeicaoMVN.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano && (x.IsMatinal == isMatinal || x.IsVespertina == isVespertina|| x.IsNoturna == isNoturna)).ToListAsync();
+                var query = await _context.RefeicaoTurno.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano && (x.IsMatinal == mat || x.IsVespertina == vesp || x.IsNoturna == not)).FirstOrDefaultAsync();
 
                 return query;
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<CalculoDaRefeicaoPorPosicao> GetCalculoDaRefeicaoPorPosicao([FromQuery] RefeicaoQuery refeicaoQr, int lugar)
+        {
+            try
+            {
+                var query = await _context.RefeicaoPosicao.Where(x => x.Dia == refeicaoQr.Dia && x.Mes == refeicaoQr.Mes && x.Ano == refeicaoQr.Ano && x.Posicao == lugar).FirstOrDefaultAsync();
+
+                return query;
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao buscar refeição: {ex.Message}");
                 return null;
@@ -310,31 +317,16 @@ namespace Nutricao.Core.Service
                         await CalculoTotal(refeicaoQr);
                     }
 
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = true,
-                        StatusCode = 200,
-                        Message = $"Refeição removida com sucesso. Recalculo dos nutrientes feito com sucesso."
-                    };
+                    return FoodServiceResponseDto.Ok("Refeição removida com sucesso.");
                 }
                 else
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        StatusCode = 404,
-                        Message = $"Refeição com nome '{nome}' não encontrada para remoção."
-                    };
+                    return FoodServiceResponseDto.NotFound($"Refeição com nome '{nome}' não encontrada.");
                 }
 
             }catch(Exception ex)
             {
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = false,
-                    StatusCode = 500,
-                    Message = $"Erro ao remover refeição: {ex.Message}"
-                };
+                return FoodServiceResponseDto.InternalServerError($"Erro ao remover refeição: {ex.Message}");
             }
         }
         public async Task<FoodServiceResponseDto> UpdateRefeicao([FromQuery] RefeicaoQuery refeicao, string nome, string nomeUpdt)
@@ -349,12 +341,7 @@ namespace Nutricao.Core.Service
 
                     if (resultAtt == null)
                     {
-                        return new FoodServiceResponseDto
-                        {
-                            IsSuccess = false,
-                            StatusCode = 404,
-                            Message = $"Alimento com nome '{nomeUpdt}' não encontrado."
-                        };
+                        return FoodServiceResponseDto.NotFound($"Alimento com nome '{nomeUpdt}' não encontrado.");
                     }
 
                     result.Nome = resultAtt.Food.Nome;
@@ -376,31 +363,16 @@ namespace Nutricao.Core.Service
                         var newCalc = await CalculoTotal(refeicao);
                     }
 
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = true,
-                        StatusCode = 200,
-                        Message = $"Refeição atualizada com sucesso. {nome} atualizado para {nomeUpdt}. Recalculo dos nutrientes feito com sucesso."
-                    };
+                    return FoodServiceResponseDto.Ok($"Refeição atualizada com sucesso. {nome} atualizado para {nomeUpdt}. Recalculo dos nutrientes feito com sucesso.");
                 }
                 else
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        StatusCode = 404,
-                        Message = $"Refeição com nome '{nome}' não encontrada para atualização."
-                    };
+                    return FoodServiceResponseDto.NotFound($"Refeição com nome '{nome}' não encontrada para atualização.");
                 }
             }
             catch (Exception ex)
             {
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = false,
-                    StatusCode = 500,
-                    Message = $"Erro ao atualizar refeição: {ex.Message}"
-                };
+                return FoodServiceResponseDto.InternalServerError($"Erro ao atualizar refeição: {ex.Message}");
             }
         }
         public async Task<FoodServiceResponseDto> UpdateRefeicaoDate([FromQuery] RefeicaoQuery refeicao, [FromBody] UpdateRefeicaoDto updt)
@@ -425,31 +397,16 @@ namespace Nutricao.Core.Service
                     await _context.SaveChangesAsync();
                     var newCalc = await CalculoTotal(refeicao);
 
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = true,
-                        StatusCode = 200,
-                        Message = $"Data da refeição atualizada com sucesso. De {refeicao.Dia} para {updt.Dia}. Faça o calculo nutricional para o dia {updt.Dia}"
-                    };
+                    return FoodServiceResponseDto.Ok($"Data da refeição atualizada com sucesso. De {refeicao.Dia} para {updt.Dia}. Faça o calculo nutricional para o dia {updt.Dia}");
                 }
                 else
                 {
-                    return new FoodServiceResponseDto
-                    {
-                        IsSuccess = false,
-                        StatusCode = 404,
-                        Message = $"Refeição com nome '{updt.Nome}' não encontrada para atualização."
-                    };
+                    return FoodServiceResponseDto.NotFound($"Refeição com nome '{updt.Nome}' não encontrada para atualização.");
                 }
             }
             catch (Exception ex)
             {
-                return new FoodServiceResponseDto
-                {
-                    IsSuccess = false,
-                    StatusCode = 500,
-                    Message = $"Erro ao atualizar data da refeição: {ex.Message}"
-                };
+                return FoodServiceResponseDto.InternalServerError($"Erro ao atualizar refeição: {ex.Message}");
             }
         }
     }

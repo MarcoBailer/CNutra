@@ -70,7 +70,7 @@ namespace WebApplicationIntegrationTest.ControllerTests
                 .ToList();
 
 
-            _factory.FoodCalcMock.Setup(f => f.GetRefeicaoByPlace(It.IsAny<RefeicaoQuery>(), It.IsAny<int>()))
+            _factory.FoodCalcMock.Setup(f => f.GetRefeicaoPorPosicao(It.IsAny<RefeicaoQuery>(), It.IsAny<int>()))
                 .ReturnsAsync(refeicoesFiltradas.ToList());
 
             var response = await _client.GetAsync($"api/Refeicao/refeicaoLugar?Dia={mockRead.Dia}&Mes={mockRead.Mes}&Ano={mockRead.Ano}&lugar={posicao}");
