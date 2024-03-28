@@ -36,6 +36,7 @@ public class Program
         // Inject app Dependencies (Dependency Injection)
         builder.Services.AddScoped<IFoodInfomation, FoodInformationService>();
         builder.Services.AddScoped<IFoodCalc, FoodCalcService>();
+        builder.Services.AddScoped<IUsuario, UsuarioService>();
 
         var app = builder.Build();
 

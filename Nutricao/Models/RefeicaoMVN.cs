@@ -21,6 +21,8 @@ namespace Nutricao.Models
         public bool IsVespertina { get; set; }
         public bool IsNoturna { get; set; }
         public int Posicao { get; set; }
+        public int UsuarioId { get; set; }
+        public virtual Usuario Usuario { get; set; }
 
         public static double CalcularTotalCarboidratos(List<RefeicaoMVN> refeicaoMVN)
         {

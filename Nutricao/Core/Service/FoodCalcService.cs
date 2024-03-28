@@ -42,6 +42,7 @@ namespace Nutricao.Core.Service
                         var refeicao = new RefeicaoMVN
                         {
                             Nome = informacao.Food.Nome,
+                            UsuarioId = refeicaoDto.UsuarioId,
                             Carboidratos = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Carboidratos),
                             Proteinas = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Proteinas),
                             Lipidios = RefeicaoMVN.CalcularQuantidadePeloPeso(peso, informacao.Food.Lipidios),

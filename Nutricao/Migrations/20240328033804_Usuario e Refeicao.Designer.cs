@@ -11,8 +11,8 @@ using Nutricao.Core.Dtos.Context;
 namespace Nutricao.Migrations
 {
     [DbContext(typeof(RefeicaoContext))]
-    [Migration("20240324045716_Calculos")]
-    partial class Calculos
+    [Migration("20240328033804_Usuario e Refeicao")]
+    partial class UsuarioeRefeicao
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -198,9 +198,75 @@ namespace Nutricao.Migrations
                     b.Property<double>("Proteinas")
                         .HasColumnType("float");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("RefeicaoMVN");
+                });
+
+            modelBuilder.Entity("Nutricao.Models.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Altura")
+                        .HasColumnType("float");
+
+                    b.Property<int>("DeficienciaFisica")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DefienciaCognitiva")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Envergadura")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Idade")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Objetivo")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Peso")
+                        .HasColumnType("float");
+
+                    b.Property<int>("PraticaFisica")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Restricao")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Sexo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Trauma")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("Nutricao.Models.RefeicaoMVN", b =>
+                {
+                    b.HasOne("Nutricao.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 #pragma warning restore 612, 618
         }
