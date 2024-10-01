@@ -24,6 +24,8 @@ Estou trabalhando arduamente para adicionar mais recursos, incluindo:
 
 - .NET Core
 - JavaScript
+- Front-Web -> React
+- IU Mobile -> Flutter
 
 ## Agradecimentos 🙌
 
